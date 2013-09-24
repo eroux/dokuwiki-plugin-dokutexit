@@ -5,3 +5,8 @@ disapeared, as well as the whole doudouke.org domain (on which he has his mail
 address).
 
 The plugin seems to be under GPLv2 license, which I'll assume.
+
+The plugin supposes you have a recent TeXLive installation (it assumes 2013, but
+it should have almost no problem with 2012 version or with MikTeX).
+
+Not that you need to install imagemagick for image conversion.

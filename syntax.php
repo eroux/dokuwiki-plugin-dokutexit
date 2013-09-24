@@ -34,35 +34,26 @@ require_once(DOKU_PLUGIN.'dokutexit/texitrender.php');
  */
 class syntax_plugin_dokutexit extends DokuWiki_Syntax_Plugin {
 
-  /**
-   * return some info
-   */
-  function getInfo(){
-    $ld = '$LastChangedDate: 2007-12-04 15:41:33 +0100 (Tue, 04 Dec 2007) $';
-    $date = substr($ld, 18, 10);
-    return array(
-		 'author' => 'Danjer',
-		 'email'  => 'Danjer@doudouke.org',
-		 'date'   => $date,
-		 'name'   => 'Doku TeXit Plugin',
-		 'desc'   => 'Generate Latex/PDF Document',
-		 'url'    => 'http://danjer.doudouke.org/tech/dokutexit'
-		 );
-  }
+    /**
+     * What kind of syntax are we?
+     */
+    public function getType(){
+      return 'protected';
+    }
 
-  /**
-   * What kind of syntax are we?
-   */
-  function getType(){
-    return 'protected';
-  }
+    /**
+     * @return string Paragraph type
+     */
+//    public function getPType() {
+//        return 'normal'; // let's keep the default value
+//    }
 
-  /**
-   * Where to sort in?
-   */
-  function getSort(){
-    return 100;
-  }
+    /**
+     * Where to sort in?
+     */
+    public function getSort(){
+      return 100;
+    }
 
   /**
    * Connect pattern to lexer
@@ -105,7 +96,7 @@ class syntax_plugin_dokutexit extends DokuWiki_Syntax_Plugin {
       if (!$this->configloaded) { 
 	$this->loadConfig(); 
       }
-      $this->_texit = new texitrender_plugin_dokutexit($ID);          
+      $this->_texit = new texitrender_plugin_dokutexit($ID);
     }
     if($mode == 'xhtml'){
       $renderer->info['cache'] = $this->_texit->docache();
