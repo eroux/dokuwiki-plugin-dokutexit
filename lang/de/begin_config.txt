@@ -1,22 +1,37 @@
-\documentclass[twoside,a4paper,10pt]{report}
-\usepackage[german]{babel} %% Use your own babel language
+%%\documentclass[twoside,a4paper,10pt]{report} % for one-page printing
+\documentclass[twoside,a5paper,11pt]{book} % for book printing
+\usepackage{ifluatex}
+\usepackage{ifxetex}
+%%
+%% next section is for latex and pdflatex:
+%%
+%\usepackage[german]{babel} %% Use your own babel language
+%\usepackage{ucs}
+%\usepackage[utf8x]{inputenc}
+%\usepackage{pslatex}
+%%\usepackage{fguill} %%Use this package for guillemot[left|right] useless with babel set to french
+%\usepackage{wasysym}
+%\usepackage{textcomp}
+%%
+%% and this one is for LuaTeX and XeTeX
+%%
+\usepackage{polyglossia}
+\setmainlanguage{german}
+%%
+%% and this section is common
+%%
+%\usepackage{supertabular}  % uncomment if you use very big tables
+%\usepackage{pdflscape}     % used for very big table too
+%\usepackage{lastpage}      % uncomment if you want to trick last page
+%\usepackage{eso-pic}       % uncomment if you want to put some text or image in the background
+% Set your margins here:
 \usepackage[top=3cm,bottom=3cm,left=2.5cm,right=2.5cm]{geometry}
-\usepackage{ucs}
-\usepackage[utf8x]{inputenc}
-\usepackage{pslatex}
-\usepackage{hyperref}
-\usepackage{graphicx}
-\usepackage{tabularx}
-\usepackage{supertabular}
-\usepackage{pdflscape} %% Used for very big table
-\usepackage{moreverb}
-\usepackage{color}
-\usepackage{listings}
-\usepackage{lastpage}
-\usepackage{fancyhdr}
-\usepackage{ulem}
-\usepackage{textcomp}
-\usepackage{wasysym}
-\usepackage{wrapfig} %%Usefull for image 
-\usepackage{fguill} %%Use this package for guillemot[left|right] useless with babel set to french
-\usepackage{eso-pic} %% Background
+% If you want to have colored links in your pdf, change the following line:
+\usepackage[unicode, bookmarks, colorlinks=false, pdfborder={0 0 0}]{hyperref}
+\usepackage{graphicx}       % provides image insertion
+\usepackage{tabularx}       % provides table insertion
+\usepackage{color}          % provides color handling
+\usepackage{listings}       % provides syntaxic coloration for code
+\usepackage{fancyhdr}       % provides headings management
+\usepackage[normalem]{ulem} % provides underlining (\uline{})
+\usepackage{wrapfig}        % usefull for image 

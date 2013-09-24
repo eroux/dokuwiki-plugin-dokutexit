@@ -377,7 +377,7 @@ class texitrender_plugin_dokutexit {
     }
     $info .= "pdfcreator = {DokuTeXit},\n";
     $info .= "pdfproducer = {dokuwiki + TeXit + ";
-    if ($this->_dokutexit_conf['mode'] == "pdflatex") 
+    if ($this->_dokutexit_conf['mode'] == "pdflatex" || $this->_dokutexit_conf['mode'] == "lualatex") 
       $info .= $this->_dokutexit_conf['mode'] . "}\n";
       else
 	$info .= $this->_dokutexit_conf['mode'] . " + dvipdf}\n";

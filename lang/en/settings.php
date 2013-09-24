@@ -26,5 +26,5 @@
 $lang['zipsources'] = 'Show "Download ZIP" button';
 $lang['dnl_button'] = 'Show "Download as PDF" button ';
 $lang['force_clean_up'] = 'Show "Force clean up" button => Not recommended if your wiki is accessible from the internet and it disable xhtml cache';
-$lang['latex_mode'] = 'LaTeX mode (latex/dvipdf or pdflatex)';
+$lang['latex_mode'] = 'LaTeX mode: latex, pdflatex, lualatex or xelatex (default pdflatex)';
 $lang['latex_path'] = 'Path to LaTeX (ex: /usr/bin)';
