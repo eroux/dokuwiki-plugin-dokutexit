@@ -447,6 +447,9 @@ class texitrender_plugin_texit {
     $cmdline .= "latexmk -f ";
     switch ($this->_texit_conf['mode'])
     {
+    case "latex":
+      $cmdline .= "-e \$dvipdf = \"dvipdfm %O -o %D %S\"; -pdfdvi "; // TODO: test, comes from http://users.phys.psu.edu/~collins/software/latexmk-jcc/
+      break;
     case "pdflatex":
       $cmdline .= "-pdf ";
       break;

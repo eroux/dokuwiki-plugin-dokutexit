@@ -27,42 +27,25 @@ if(!defined('DOKU_INC')) die();
 // we inherit from the XHTML renderer instead directly of the base renderer
 //require_once DOKU_INC.'inc/parser/xhtml.php';
 //require_once DOKU_INC.'inc/parser/renderer.php';
-require_once DOKU_INC.'lib/plugins/dokutexit/latex.php';
-require_once DOKU_INC.'lib/plugins/dokutexit/texitrender.php';
+require_once DOKU_INC.'lib/plugins/texit/latex.php';
+require_once DOKU_INC.'lib/plugins/texit/texitrender.php';
 /**
  * The Renderer
  */
-class renderer_plugin_dokutexit extends Doku_Renderer {
+class renderer_plugin_texit extends Doku_Renderer {
     var $info = array(
         'cache' => false, // may the rendered result cached?
         'toc'   => false, // render the TOC?
     );
 
     /**
-     * return some info
-     */
-  function getInfo(){
-    //        return confToHash(dirname(__FILE__).'/info.txt');
-    // Change this !
-    return array(
-		 'author' => 'Danjer',
-		 'email'  => 'Danjer@doudouke.org',
-		 'date'   => 'soon',
-		 'name'   => 'Doku TeXit Plugin',
-		 'desc'   => 'Generate Latex/PDF Document',
-		 'url'    => 'http://danjer.doudouke.org/tech/dokutexit'
-		 );
-  }
-
-    /**
      * the format we produce
      */
     function getFormat(){
-
         // this should be 'dokutexit' usally, but we inherit from the xhtml renderer
         // and produce XHTML as well, so we can gain magically compatibility
         // by saying we're the 'xhtml' renderer here.
-        return 'dokutexit';
+        return 'texit';
     }
 
 
