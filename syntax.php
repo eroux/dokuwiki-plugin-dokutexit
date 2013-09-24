@@ -26,13 +26,13 @@
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 require_once(DOKU_PLUGIN.'syntax.php');
-require_once(DOKU_PLUGIN.'dokutexit/texitrender.php');
+require_once(DOKU_PLUGIN.'texit/texitrender.php');
 
 /**
  * All DokuWiki plugins to extend the parser/rendering mechanism
  * need to inherit from this class
  */
-class syntax_plugin_dokutexit extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_texit extends DokuWiki_Syntax_Plugin {
 
     /**
      * What kind of syntax are we?
@@ -60,11 +60,11 @@ class syntax_plugin_dokutexit extends DokuWiki_Syntax_Plugin {
    */
   function connectTo($mode) {
     $this->Lexer->addEntryPattern('<texit(?=.*\x3C/texit\x3E)', $mode,
-				  'plugin_dokutexit');
+				  'plugin_texit');
   }
 
   function postConnect() {
-    $this->Lexer->addExitPattern('</texit>','plugin_dokutexit');
+    $this->Lexer->addExitPattern('</texit>','plugin_texit');
   }
 
   /**
@@ -96,7 +96,7 @@ class syntax_plugin_dokutexit extends DokuWiki_Syntax_Plugin {
       if (!$this->configloaded) { 
 	$this->loadConfig(); 
       }
-      $this->_texit = new texitrender_plugin_dokutexit($ID);
+      $this->_texit = new texitrender_plugin_texit($ID);
     }
     if($mode == 'xhtml'){
       $renderer->info['cache'] = $this->_texit->docache();

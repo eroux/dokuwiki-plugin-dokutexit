@@ -24,6 +24,7 @@
  */
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
+if(!defined('PLUGIN_TEXIT')) define('PLUGIN_TEXIT',DOKU_PLUGIN.'texit/');
 
 class texitConfig {
   var $_error = NULL;
@@ -44,7 +45,7 @@ class texitConfig {
     global $conf;
     global $php_errormsg;
     $this->_name = $name;
-    $this->_dokutexit_path = DOKU_PLUGIN.'dokutexit/';
+    $this->_dokutexit_path = PLUGIN_TEXIT;
     $this->_settings_path = $this->_dokutexit_path . 'settings/';
     $this->_configfile = $this->_settings_path . $name . '.cfg';
     if (!is_dir($this->_settings_path)) {

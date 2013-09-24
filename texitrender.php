@@ -25,10 +25,11 @@
 
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
-require_once(DOKU_PLUGIN.'dokutexit/class.texitconfig.php');
-require_once(DOKU_PLUGIN.'dokutexit/latex.php');
+if(!defined('PLUGIN_TEXIT')) define('PLUGIN_TEXIT',DOKU_PLUGIN.'texit/');
+require_once(DOKU_PLUGIN.'texit/class.texitconfig.php');
+require_once(DOKU_PLUGIN.'texit/latex.php');
 
-class texitrender_plugin_dokutexit {
+class texitrender_plugin_texit {
   // =======================================================================
   // Variable Definitions
   // =======================================================================
@@ -39,7 +40,7 @@ class texitrender_plugin_dokutexit {
 		     'footer' => NULL
 		     );
   var $_inputs = NULL;  
-  var $_dokutexit_conf = array(
+  var $_texit_conf = array(
 			       'recurse' => 'off',
 			       'recurse_file' => 'off',
 			       'usetablefigure' => 'off',
@@ -66,9 +67,9 @@ class texitrender_plugin_dokutexit {
    *
    * @param $pageid
    */
-  function texitrender_plugin_dokutexit($pageid = NULL) {
+  function texitrender_plugin_texit($pageid = NULL) {
     global $conf;
-    global $_dokutexit_conf;
+    global $_texit_conf;
     if ($pageid != NULL) {
       $this->_pageid = $pageid;
       $this->_doku_file = wikiFN($this->_pageid);
@@ -77,24 +78,24 @@ class texitrender_plugin_dokutexit {
       $this->latex = $this->buildfilelink('tex', 'texit:tmp:');
       $this->latexlog = $this->buildfilelink('log', 'texit:tmp:');
     }
-    if (isset($conf['plugin']['dokutexit'])) {
-      if (isset($conf['plugin']['dokutexit']['zipsources']))
-	$this->_dokutexit_conf['zipsources'] = 
-	  $conf['plugin']['dokutexit']['zipsources'];
-      if (isset($conf['plugin']['dokutexit']['dnl_button']))
-	$this->_dokutexit_conf['dnl_button'] = 
-	  $conf['plugin']['dokutexit']['dnl_button'];
-      if (isset($conf['plugin']['dokutexit']['force_clean_up']))
-	$this->_dokutexit_conf['force_clean_up'] = 
-	  $conf['plugin']['dokutexit']['force_clean_up'];
-      if (isset($conf['plugin']['dokutexit']['latex_mode']))
-	$this->_dokutexit_conf['mode'] = 
-	  $conf['plugin']['dokutexit']['latex_mode'];
-      if (isset($conf['plugin']['dokutexit']['latex_path']))
-	$this->_dokutexit_conf['path'] = 
-	  $conf['plugin']['dokutexit']['latex_path'];
+    if (isset($conf['plugin']['texit'])) {
+      if (isset($conf['plugin']['texit']['zipsources']))
+	$this->_texit_conf['zipsources'] = 
+	  $conf['plugin']['texit']['zipsources'];
+      if (isset($conf['plugin']['texit']['dnl_button']))
+	$this->_texit_conf['dnl_button'] = 
+	  $conf['plugin']['texit']['dnl_button'];
+      if (isset($conf['plugin']['texit']['force_clean_up']))
+	$this->_texit_conf['force_clean_up'] = 
+	  $conf['plugin']['texit']['force_clean_up'];
+      if (isset($conf['plugin']['texit']['latex_mode']))
+	$this->_texit_conf['mode'] = 
+	  $conf['plugin']['texit']['latex_mode'];
+      if (isset($conf['plugin']['texit']['latex_path']))
+	$this->_texit_conf['path'] = 
+	  $conf['plugin']['texit']['latex_path'];
     }
-    $_dokutexit_conf = $this->_dokutexit_conf;
+    $_texit_conf = $this->_texit_conf;
   }
 
   // ========================================================================
@@ -181,13 +182,13 @@ class texitrender_plugin_dokutexit {
       }
     }
     if (is_readable($this->pdf['file']) ) {
-      if ($this->_dokutexit_conf['dnl_button']) {
+      if ($this->_texit_conf['dnl_button']) {
 	$string .= '<form class="button" method="post" action="'. $url ;
 	$string .= '"><div class="no"><input type="submit" value="';
 	$string .= 'Download as PDF';
 	$string .= '" class="button" /></div></form>';
       }
-      if ($this->_dokutexit_conf['force_clean_up']) {
+      if ($this->_texit_conf['force_clean_up']) {
 	$string .= $this->render_cleanup(1);
       }
     } else {
@@ -201,7 +202,7 @@ class texitrender_plugin_dokutexit {
       $string .= '</div></form>';
     }
     if (is_readable($this->zip['file']) 
-	&& $this->_dokutexit_conf['zipsources']) {
+	&& $this->_texit_conf['zipsources']) {
 	$string .= $this->render_xhtml_button($this->zip, 
 					      'Download LaTeX sources as ZIP');
     } 
@@ -231,7 +232,7 @@ class texitrender_plugin_dokutexit {
   }
 
   function docache() {
-    if ($this->_dokutexit_conf['force_clean_up'])
+    if ($this->_texit_conf['force_clean_up'])
       return false;
     if (isset($_REQUEST['generate'])) {
       return false;
@@ -274,12 +275,22 @@ class texitrender_plugin_dokutexit {
     if ($lvl >= 1) {
       @unlink($this->latex['file']);
     }
-    @unlink($this->latexlog['file']);
-    @unlink(mediaFN('texit:tmp:'. $this->_pageid . '.out'));
-    @unlink(mediaFN('texit:tmp:'. $this->_pageid . '.aux'));
-    @unlink(mediaFN('texit:tmp:'. $this->_pageid . '.toc'));
-    @unlink(mediaFN('texit:tmp:'. $this->_pageid . '.dvi'));
-    @unlink(mediaFN('texit:tmp:'. $this->_pageid . '.pdf'));
+    chdir(dirname($this->latex['file']));
+    if (isset($this->_texit_conf['path']) 
+	&& trim($this->_texit_conf['path']) != "") {
+      $cmdline = $this->_texit_conf['path'] . DIRECTORY_SEPARATOR;
+    } else {
+      $cmdline = '';
+    }
+    $cmdline .= "latexmk -CA ";
+    $cmdline .= $this->latex['file'] . ' 2>&1 ';
+    $log = @exec($cmdline, $output, $ret);
+    if ($ret) {
+      $this->_error_log .= "cmdline: " . $cmdline . "\n";
+      $this->_error_log .= "ret: " . $ret . "\n";
+      $this->_error_log .= implode("\n", $output);
+      return false;
+    }
     //Cleaning plugins files
     $TeXitImage_glob['plugin_list'] = array();
     $images = new TexItImage();
@@ -318,50 +329,14 @@ class texitrender_plugin_dokutexit {
     io_saveFile($this->zip['file'], $zip->getZippedfile());
   }
 
-
-  function pdffromdvi() {
-    $tmp_dir = $this->_tmp_dir;
-    if (eregi('WIN',PHP_OS)) {
-      if ($this->_dokutexit_conf['path']) {
-	$cmdline = $this->_dokutexit_conf['path'] . DIRECTORY_SEPARATOR;
-      } else {
-	$cmdline = '';
-      }
-      $cmdline .= "dvipdfm ";
-      $cmdline .= "-o " . $this->pdf['file'] . " ";
-      $cmdline .= mediaFN('texit:tmp:'. $this->_pageid . '.dvi');
-    } else {
-      if ($this->_dokutexit_conf['path']) {
-	$cmdline = $this->_dokutexit_conf['path'] . DIRECTORY_SEPARATOR;
-      } else {
-	$cmdline = '';
-      }
-      $cmdline .= "dvipdf ";
-      $cmdline .= mediaFN('texit:tmp:'. $this->_pageid . '.dvi') . " ";
-      $cmdline .= $this->pdf['file'] . " ";
-    }
-      $log = @exec($cmdline, $output, $ret);
-    if ($ret) {
-      $this->_error_log = "cmdline: " . $cmdline . "\n";
-      $this->_error_log .= "ret: " . $ret . "\n";
-      $this->_error_log .= implode("\n", $output);
-    }
-    if (!filesize($this->pdf['file'])) {
-      $this->_error_log .= "\nError while exec dvipdf\n";
-    }
-  }
-
   function copypdftomedia() {
     $tmp_dir = $this->_tmp_dir;
     copy(mediaFN('texit:tmp:'. $this->_pageid . '.pdf'),
 	 $this->pdf['file']);
-    if (!filesize($this->pdf['file'])) {
-      $this->_error_log .= "\nError while exec dvipdf\n";
-    }
   }
 
   function generate_latex_info() {
-    global $_dokutexit_conf;
+    global $_texit_conf;
     $latex = & new Doku_Renderer_latex;
     $latex->latexentities = $this->getLatexEntities(); 
     $info = "\n";
@@ -375,13 +350,8 @@ class texitrender_plugin_dokutexit {
 	$info .= 'pdf' . $section . ' = {' . $hash[$section] . "},\n";
       }
     }
-    $info .= "pdfcreator = {DokuTeXit},\n";
-    $info .= "pdfproducer = {dokuwiki + TeXit + ";
-    if ($this->_dokutexit_conf['mode'] == "pdflatex" || $this->_dokutexit_conf['mode'] == "lualatex") 
-      $info .= $this->_dokutexit_conf['mode'] . "}\n";
-      else
-	$info .= $this->_dokutexit_conf['mode'] . " + dvipdf}\n";
-    $info .= "}\n";
+    $info .= "pdfcreator = {texit},\n";
+    $info .= "pdfproducer = {dokuwiki + TeXit (" . $info .= $this->_texit_conf['mode'] . " mode)}\n";
     if (isset($hash['title'])) {
       $info .= '\\title{' . $latex->_latexEntities($hash['title']) . "}\n";
     } else {
@@ -401,12 +371,12 @@ class texitrender_plugin_dokutexit {
     } else {
       $info .= '\\dokubackground{'. $latex->_latexEntities(DOKU_URL) . "}\n";
     } 
-    foreach ( array_keys($this->_dokutexit_conf) as $val ) {
+    foreach ( array_keys($this->_texit_conf) as $val ) {
       if (isset($hash[$val])) {
-	$this->_dokutexit_conf[$val] = $hash[$val];
+	$this->_texit_conf[$val] = $hash[$val];
       } 
     }
-    $_dokutexit_conf = $this->_dokutexit_conf;
+    $_texit_conf = $this->_texit_conf;
     return $info;
   }
 
@@ -435,10 +405,10 @@ class texitrender_plugin_dokutexit {
 	array_push($tex_doc, $part);
       }      
     }
-    if (isset($this->_dokutexit_conf['command_hook']))
-      $cmd_doc .= $this->_dokutexit_conf['command_hook'];
-    if (isset($this->_dokutexit_conf['foot_hook']))
-      $tex_doc[] = $this->_dokutexit_conf['foot_hook'];
+    if (isset($this->_texit_conf['command_hook']))
+      $cmd_doc .= $this->_texit_conf['command_hook'];
+    if (isset($this->_texit_conf['foot_hook']))
+      $tex_doc[] = $this->_texit_conf['foot_hook'];
     $tex_doc[] = $foot->read();
     if ($foot->is_error())
       $error = 1;
@@ -458,8 +428,8 @@ class texitrender_plugin_dokutexit {
     $ret = 0;
     $output = array();
     if ($latexdocument == NULL) {
-      msg("DokuTeXit configuration is not saved", -1);
-      $this->_error_log = "DokuTeXit configuration is not saved\n";
+      msg("texit configuration is not saved", -1);
+      $this->_error_log = "texit configuration is not saved\n";
       return false;
     }
     foreach ($latexdocument as $subpart) {
@@ -468,25 +438,28 @@ class texitrender_plugin_dokutexit {
     unset($latexdocument);
     //     msg("Memory Usage B: ". memory_get_usage(), -1);
     chdir(dirname($this->latex['file']));
-    if (isset($this->_dokutexit_conf['path']) 
-	&& trim($this->_dokutexit_conf['path']) != "") {
-      $cmdline = $this->_dokutexit_conf['path'] . '/';
+    if (isset($this->_texit_conf['path']) 
+	&& trim($this->_texit_conf['path']) != "") {
+      $cmdline = $this->_texit_conf['path'] . DIRECTORY_SEPARATOR;
     } else {
       $cmdline = '';
     }
-    $cmdline .=  $this->_dokutexit_conf['mode'] . ' ';
+    $cmdline .= "latexmk -f ";
+    switch ($this->_texit_conf['mode'])
+    {
+    case "pdflatex":
+      $cmdline .= "-pdf ";
+      break;
+    case "lualatex":
+      $cmdline .= "-lualatex ";
+      break;
+    case "xelatex":
+      $cmdline .= "-xelatex ";
+      break;    
+    }
     $cmdline .= $this->latex['file'] . ' 2>&1 ';
     $log = @exec($cmdline, $output, $ret);
     if ($ret) {
-      $this->_error_log = "latex pass 1:\n";
-      $this->_error_log .= "cmdline: " . $cmdline . "\n";
-      $this->_error_log .= "ret: " . $ret . "\n";
-      $this->_error_log .= implode("\n", $output);
-      return false;
-    }
-    $log = @exec($cmdline, $output, $ret); //twice for toc
-    if ($ret) {
-      $this->_error_log = "latex pass 2:\n";
       $this->_error_log .= "cmdline: " . $cmdline . "\n";
       $this->_error_log .= "ret: " . $ret . "\n";
       $this->_error_log .= implode("\n", $output);
@@ -494,14 +467,11 @@ class texitrender_plugin_dokutexit {
     }
     io_makeFileDir($this->pdf['file']);
     //    msg("Memory Usage C: ". memory_get_usage(), -1);
-    if ($this->_dokutexit_conf['mode'] != 'pdflatex')
-      $this->pdffromdvi();
-    else
-      $this->copypdftomedia();
+    $this->copypdftomedia();
     if (strlen($this->_error_log)) {
       return false;
     }
-    if ($this->_dokutexit_conf['zipsources'])
+    if ($this->_texit_conf['zipsources'])
       $this->zipsources();
     $this->clean_up();
     return true;
@@ -542,10 +512,10 @@ class texitrender_plugin_dokutexit {
 	$tex_doc[] = $this->p_locale_latex($id);
       }
     }
-    if (isset($this->_dokutexit_conf['command_hook']))
-      $cmd_doc .= $this->_dokutexit_conf['command_hook'];
-    if (isset($this->_dokutexit_conf['footer_hook']))
-      $tex_doc[] = $this->_dokutexit_conf['footer_hook'];
+    if (isset($this->_texit_conf['command_hook']))
+      $cmd_doc .= $this->_texit_conf['command_hook'];
+    if (isset($this->_texit_conf['footer_hook']))
+      $tex_doc[] = $this->_texit_conf['footer_hook'];
     $tex_doc[] = $foot->read();
     if ($foot->is_error())
       $error = 1;
@@ -565,9 +535,9 @@ class texitrender_plugin_dokutexit {
     // Original parser use
     //    return p_get_instructions($text); 
 
-    // Dokutexit Get instruction with low memory usage
+    // texit Get instruction with low memory usage
     // Use only one parser object and little bit faster
-    return $this->p_get_instructions_dokutexit($text); 
+    return $this->p_get_instructions_texit($text); 
   }
 
 
@@ -577,7 +547,7 @@ class texitrender_plugin_dokutexit {
  * @author Harry Fuecks <hfuecks@gmail.com>
  * @author Andreas Gohr <andi@splitbrain.org>
  */
-  function p_get_instructions_dokutexit(&$text){
+  function p_get_instructions_texit(&$text){
     
 //     msg("Memory Usage Parser Start: ". memory_get_usage(), -1);
 //     msg("Text: ". md5($text), 1);
@@ -656,19 +626,19 @@ class texitrender_plugin_dokutexit {
       $id = $this->_pageid;
     }
     //fetch parsed locale
-    $info = $this->_dokutexit_conf;
+    $info = $this->_texit_conf;
     $latex[] = $this->p_render_latex($id, $info);
     //    msg("Memory Sub Usage First: ". memory_get_usage(), -1);
-    $this->_dokutexit_conf['command_hook'] = $info['command_hook'];
-    $this->_dokutexit_conf['footer_hook'] = $info['footer_hook'];
-    if ($this->_dokutexit_conf['recurse'] == "on"
-	|| $this->_dokutexit_conf['recurse'] == "appendix"
-	|| $this->_dokutexit_conf['recurse'] == "chapter") 
+    $this->_texit_conf['command_hook'] = $info['command_hook'];
+    $this->_texit_conf['footer_hook'] = $info['footer_hook'];
+    if ($this->_texit_conf['recurse'] == "on"
+	|| $this->_texit_conf['recurse'] == "appendix"
+	|| $this->_texit_conf['recurse'] == "chapter") 
       $do_recurse = 1;
-    if ($this->_dokutexit_conf['recurse_file'] == "on") 
+    if ($this->_texit_conf['recurse_file'] == "on") 
       $do_recurse_file = 1;
     if ($do_recurse || $do_recurse_file) {
-      if ($this->_dokutexit_conf['recurse'] != "chapter")
+      if ($this->_texit_conf['recurse'] != "chapter")
 	$latex[] = "\n\\appendix\n";
       if (is_array($info['dokulinks']) ) {
 	$hash = NULL;
@@ -681,14 +651,14 @@ class texitrender_plugin_dokutexit {
 	    if ($do_recurse 
 		&& ($link['type'] == 'local' || $link['type'] == 'internal')
 		&& @file_exists(wikiFN($link['id']))) {
-	      $subinfo = $this->_dokutexit_conf;
+	      $subinfo = $this->_texit_conf;
 	      error_log("render_link " . $link['id']);
 	      $latex[] = $this->p_render_latex($link['id'], $subinfo);
 	      error_log("render_end " . $link['id']);
 	    }
 	    if ($do_recurse_file && $link['type'] == 'file' 
 		&& @file_exists($link['id'])) {
-	      $subinfo = $this->_dokutexit_conf;
+	      $subinfo = $this->_texit_conf;
 	      $subinfo['current_file_id'] = $link['id'];
 	      $text = '====== ' . $link['name'] . "======\n";
 	      $text .= "<file>\n";
