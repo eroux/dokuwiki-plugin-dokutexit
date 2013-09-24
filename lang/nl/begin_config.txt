@@ -2,28 +2,33 @@
 \documentclass[twoside,a5paper,11pt]{book} % for book printing
 \usepackage{ifluatex}
 \usepackage{ifxetex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi>0
+%%
+%% This section is for LuaTeX and XeTeX
+%% Warning: polyglossia works with LuaTeX starting from TL2013
+%%
+  \usepackage{polyglossia}
+  \setmainlanguage{dutch}
+\else
 %%
 %% next section is for latex and pdflatex:
 %%
-%\usepackage[dutch]{babel} %% Use your own babel language
-%\usepackage{ucs}
-%\usepackage[utf8x]{inputenc}
-%\usepackage{pslatex}
-%%\usepackage{fguill} %%Use this package for guillemot[left|right] useless with babel set to french
-%\usepackage{wasysym}
-%\usepackage{textcomp}
-%%
-%% and this one is for LuaTeX and XeTeX
-%%
-\usepackage{polyglossia}
-\setmainlanguage{dutch}
+  \usepackage[dutch]{babel} %% Use your own babel language
+  \usepackage{ucs}
+  \usepackage[utf8x]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{pslatex}
+  \usepackage{wasysym}
+  \usepackage{textcomp}
+\fi
 %%
 %% and this section is common
 %%
-%\usepackage{supertabular}  % uncomment if you use very big tables
-%\usepackage{pdflscape}     % used for very big table too
-%\usepackage{lastpage}      % uncomment if you want to trick last page
-%\usepackage{eso-pic}       % uncomment if you want to put some text or image in the background
+%% uncomment these if you use them
+%\usepackage{supertabular}  % very big tables
+%\usepackage{pdflscape}     % idem
+%\usepackage{lastpage}      % trick last page
+%\usepackage{eso-pic}       % if you want to put some text or image in the background
 % Set your margins here:
 \usepackage[top=3cm,bottom=3cm,left=2.5cm,right=2.5cm]{geometry}
 % If you want to have colored links in your pdf, change the following line:
