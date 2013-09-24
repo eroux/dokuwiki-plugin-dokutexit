@@ -454,10 +454,10 @@ class texitrender_plugin_texit {
       $cmdline .= "-pdf ";
       break;
     case "lualatex":
-      $cmdline .= "-lualatex ";
+      $cmdline .= "-pdf -pdflatex=lualatex ";
       break;
     case "xelatex":
-      $cmdline .= "-xelatex ";
+      $cmdline .= "-latex=xelatex -e \$dvipdf = \"dvipdfmx %O -o %D %S\"; -pdfdvi ";
       break;    
     }
     $cmdline .= $this->latex['file'] . ' 2>&1 ';
