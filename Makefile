@@ -1,80 +1,38 @@
 #
 # Makefile to publish a Dokuwiki plugin 
+# Copyright (C) 2013 Elie Roux <elie.roux@telecom-bretagne.eu>
 #
-# http://danjer.doudouke.org/dokutexit
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
 #
-# Author : Danjer@doudouke.org
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# --------------------------------------------------------------------
 #
 
 
-NAME = dokutexit
-TAR_NAME = $(HOME)/www/$(NAME).tar.gz
-ZIP_NAME = $(HOME)/www/$(NAME).zip
+NAME = texit
+FILES = syntax.php admin.php texitrender.php latex.php class.texitimage.php class.texitconfig.php README LICENSE.GPLv2 plugin.info.txt
+DIRS = conf/ lang/
 
-GNAME = graphviz
-GSRC = $(HOME)/www/data/media/tech/dokutexit_graphviz_syntax.php.txt
-GTAR_NAME = $(HOME)/www/$(GNAME).tar.gz
-GZIP_NAME = $(HOME)/www/$(GNAME).zip
+all : tgz zip
 
+zip: $(FILES) $(DIRS)
+	@echo "Building zip file..."
+	@zip -rq $(NAME).zip --exclude \*~ -- $(FILES) $(DIRS)
 
-SRC =  syntax.php admin.php texitrender.php latex.php class.texitimage.php class.texitconfig.php Makefile
-
-all : $(TAR_NAME) $(ZIP_NAME) $(GTAR_NAME) $(GZIP_NAME)
-
-$(ZIP_NAME) : $(SRC)
-	rm -rf /tmp/$(NAME)
-	mkdir /tmp/$(NAME)
-	cp -R * /tmp/$(NAME)
-	find /tmp/$(NAME) -name '.svn' | xargs rm -rf
-	find /tmp/$(NAME) -name '*~' | xargs rm -f
-	find /tmp/$(NAME) -name 'semantic.cache' | xargs rm -f
-	rm -f /tmp/$(NAME)/manager.dat
-	rm -rf /tmp/$(NAME)/settings
-	(cd /tmp; zip -r $(ZIP_NAME) $(NAME))
-	rm -rf /tmp/$(NAME)
-
-$(TAR_NAME) : $(SRC)
-	rm -rf /tmp/$(NAME)
-	mkdir /tmp/$(NAME)
-	cp -R * /tmp/$(NAME)
-	find /tmp/$(NAME) -name '.svn' | xargs rm -rf
-	find /tmp/$(NAME) -name '*~' | xargs rm -f
-	find /tmp/$(NAME) -name 'semantic.cache' | xargs rm -f
-	rm -f /tmp/$(NAME)/manager.dat
-	rm -rf /tmp/$(NAME)/settings
-	(cd /tmp; tar zcvf $(TAR_NAME) $(NAME))
-	rm -rf /tmp/$(NAME)
-
-
-$(GZIP_NAME) : $(GSRC)
-	rm -rf /tmp/$(GNAME)
-	mkdir /tmp/$(GNAME)
-	cp -R $(GSRC) /tmp/$(GNAME)/syntax.php
-	find /tmp/$(GNAME) -name '.svn' | xargs rm -rf
-	find /tmp/$(GNAME) -name '*~' | xargs rm -f
-	find /tmp/$(GNAME) -name 'semantic.cache' | xargs rm -f
-	rm -f /tmp/$(GNAME)/manager.dat
-	rm -rf /tmp/$(GNAME)/settings
-	(cd /tmp; zip -r $(GZIP_NAME) $(GNAME))
-	rm -rf /tmp/$(GNAME)
-
-$(GTAR_NAME) : $(GSRC)
-	rm -rf /tmp/$(GNAME)
-	mkdir /tmp/$(GNAME)
-	cp -R $(GSRC) /tmp/$(GNAME)/syntax.php
-	find /tmp/$(GNAME) -name '.svn' | xargs rm -rf
-	find /tmp/$(GNAME) -name '*~' | xargs rm -f
-	find /tmp/$(GNAME) -name 'semantic.cache' | xargs rm -f
-	rm -f /tmp/$(GNAME)/manager.dat
-	rm -rf /tmp/$(GNAME)/settings
-	(cd /tmp; tar zcvf $(GTAR_NAME) $(GNAME))
-	rm -rf /tmp/$(GNAME)
-
+tgz: $(FILES) $(DIRS)
+	@echo "Building tgz file..."
+	@tar -czf $(NAME).tgz --exclude=\*\*/\*~ -- $(FILES) $(DIRS)
 
 clean: 	
-	find . -name '*~' | xargs rm -f	
-	find . -name 'semantic.cache' | xargs rm -f
+	rm -rf $(NAME).tgz $(NAME).zip
 
-fclean: clean
-	rm -f $(TAR_NAME)
-	rm -f $(ZIP_NAME)
