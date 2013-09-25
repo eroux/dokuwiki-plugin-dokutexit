@@ -242,8 +242,8 @@ class TexItImage {
   }
 
   function latex_mode () {
-    global $_dokutexit_conf;
-    if (isset($_dokutexit_conf) && $_dokutexit_conf['mode'] == 'pdflatex')
+    global $_texit_conf;
+    if (isset($_texit_conf) && $_texit_conf['mode'] == 'pdflatex')
       return true;
     return false;
   }

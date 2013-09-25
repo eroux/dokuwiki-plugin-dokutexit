@@ -1,33 +1,33 @@
-/* plugin:dokutexitmanager */
-#dokutexit__manager {margin: 1em;}
-#dokutexit__manager div.success,
-#dokutexit__manager div.error,
-#dokutexit__manager div.info {
+/* plugin:texitmanager */
+#texit__manager {margin: 1em;}
+#texit__manager div.success,
+#texit__manager div.error,
+#texit__manager div.info {
   background-position: 0.5em;
   padding: 0.5em;
   text-align:center
 }
 
-#dokutexit__manager form { }
-#dokutexit__manager table {margin: 1em 0;}
-#dokutexit__manager td input.edit {width: 30em;}
-#dokutexit__manager td select.edit { }
-#dokutexit__manager td textarea.edit {width: 27.5em; height: 4em;}
+#texit__manager form { }
+#texit__manager table {margin: 1em 0;}
+#texit__manager td input.edit {width: 30em;}
+#texit__manager td select.edit { }
+#texit__manager td textarea.edit {width: 27.5em; height: 4em;}
 
-#dokutexit__manager tr.default .input,
-#dokutexit__manager tr.default input,
-#dokutexit__manager tr.default textarea,
-#dokutexit__manager tr.default select {
+#texit__manager tr.default .input,
+#texit__manager tr.default input,
+#texit__manager tr.default textarea,
+#texit__manager tr.default select {
   background-color: #ccddff;
 }
 
-#dokutexit__manager tr.protected .input,
-#dokutexit__manager tr.protected input,
-#dokutexit__manager tr.default textarea,
-#dokutexit__manager tr.protected select {
+#texit__manager tr.protected .input,
+#texit__manager tr.protected input,
+#texit__manager tr.default textarea,
+#texit__manager tr.protected select {
   background-color: #ffcccc;
 }
 
-#dokutexit__manager td.error  {background-color: red;}
+#texit__manager td.error  {background-color: red;}
 
-/* end plugin:dokutexitmanager */
+/* end plugin:texitmanager */

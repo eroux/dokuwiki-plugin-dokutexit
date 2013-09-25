@@ -45,8 +45,8 @@ class texitConfig {
     global $conf;
     global $php_errormsg;
     $this->_name = $name;
-    $this->_dokutexit_path = PLUGIN_TEXIT;
-    $this->_settings_path = $this->_dokutexit_path . 'settings/';
+    $this->_texit_path = PLUGIN_TEXIT;
+    $this->_settings_path = $this->_texit_path . 'settings/';
     $this->_configfile = $this->_settings_path . $name . '.cfg';
     if (!is_dir($this->_settings_path)) {
       if (!io_mkdir_p($this->_settings_path)) {

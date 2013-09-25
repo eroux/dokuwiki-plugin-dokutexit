@@ -42,7 +42,7 @@ class renderer_plugin_texit extends Doku_Renderer {
      * the format we produce
      */
     function getFormat(){
-        // this should be 'dokutexit' usally, but we inherit from the xhtml renderer
+        // this should be 'texit' usally, but we inherit from the xhtml renderer
         // and produce XHTML as well, so we can gain magically compatibility
         // by saying we're the 'xhtml' renderer here.
         return 'texit';
@@ -60,7 +60,7 @@ class renderer_plugin_texit extends Doku_Renderer {
 	if (!$this->configloaded) { 
 	  $this->loadConfig(); 
 	}
-	$this->_texit = new texitrender_plugin_dokutexit($this->id);
+	$this->_texit = new texitrender_plugin_texit($this->id);
 	$info = array();
 	if (preg_match("/<texit info>(.*?)<\/texit>/", 
 		       str_replace("\n", '\n', rawWiki($this->id)), 
@@ -70,11 +70,11 @@ class renderer_plugin_texit extends Doku_Renderer {
 	} else {
 	  echo "error preg_match";
 	}
- 	if ($_REQUEST['dokutexit_type'] == 'zip')
- 	  $this->_texit->_dokutexit_conf['zipsources'] = true;
+ 	if ($_REQUEST['texit_type'] == 'zip')
+ 	  $this->_texit->_texit_conf['zipsources'] = true;
 	if ($this->_texit->generate('pdf')) {
 	  $filename = null;
-	  switch ($_REQUEST['dokutexit_type']) {
+	  switch ($_REQUEST['texit_type']) {
 	  case 'zip':
 	    if (is_readable($this->_texit->zip['file'])) {
 	      $filename = $this->_texit->zip['file'];
@@ -99,7 +99,4 @@ class renderer_plugin_texit extends Doku_Renderer {
 	}
       }
     }
-
 }
-
-//Setup VIM: ex: et ts=4 enc=utf-8 :

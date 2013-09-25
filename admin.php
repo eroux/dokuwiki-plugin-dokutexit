@@ -26,14 +26,14 @@
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../../').'/');
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 require_once(DOKU_PLUGIN.'admin.php');
-require_once(DOKU_PLUGIN.'dokutexit/class.texitconfig.php');
-require_once(DOKU_PLUGIN.'dokutexit/texitrender.php');
+require_once(DOKU_PLUGIN.'texit/class.texitconfig.php');
+require_once(DOKU_PLUGIN.'texit/texitrender.php');
 
 /**
- * All Dokutexit plugins to extend the admin function
+ * All Dokuwiki plugins to extend the admin function
  * need to inherit from this class
  */
-class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
+class admin_plugin_texit extends Dokuwiki_Admin_Plugin {
   var $_changed = false;          // set to true if configuration has altered
   var $_error = NULL;
   var $_error_data = '';
@@ -45,23 +45,8 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
 		     'footer' => NULL,
 		     'entities' => NULL
 		     );
-  /**
-   * return some info
-   */
-  function getInfo(){
-    $ld = '$LastChangedDate: 2007-11-27 10:42:17 +0100 (Tue, 27 Nov 2007) $';
-    $date = substr($ld, 18, 10);
-    return array(
-		 'author' => 'Danjer',
-		 'email'  => 'Danjer@doudouke.org',
-		 'date'   => $date,
-		 'name'   => 'TeXit Configuration Manager',
-		 'desc'   => 'Manage dokuTeXit configuration ',
-		 'url'    => 'http://danjer.doudouke.org/tech/dokutexit'
-		 );
-  }
 
-  function admin_plugin_dokutexit() {
+  function admin_plugin_texit() {
     $this->setupLocale(true);
   }
 
@@ -92,7 +77,7 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
    * output appropriate html
    */
   function latex($id) {
-    $texit = new texitrender_plugin_dokutexit($id);
+    $texit = new texitrender_plugin_texit($id);
     io_saveFile('/tmp/test.tex', $texit->p_locale_latex());
   }
 
@@ -113,7 +98,7 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
     global $ID;
 
     print $this->locale_xhtml('intro');
-    ptln('<div id="dokutexit__manager">');
+    ptln('<div id="texit__manager">');
     if ($this->_config->locked)
       ptln('<div class="info">'.$this->getLang('locked').'</div>');
     elseif (!is_null($this->_error)) {
@@ -135,14 +120,14 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
     ptln('  </table>');
     ptln('<p>');
     ptln('  <input type="hidden" name="do"     value="admin" />');
-    ptln('  <input type="hidden" name="page"   value="dokutexit" />');
+    ptln('  <input type="hidden" name="page"   value="texit" />');
     ptln('  <input type="hidden" name="save"   value="1" />');
     ptln('  <input type="submit" name="submit" class="button" value="'.$this->lang['texit_btn_save'].'" accesskey="s" />');
     //    ptln('  <input type="reset" name="submit" class="button" value="'.$this->lang['texit_btn_revert'].'" />');
     ptln('</form>');
     ptln('<form action="'.wl($ID).'" method="post">');
     ptln('  <input type="hidden" name="do"     value="admin" />');
-    ptln('  <input type="hidden" name="page"   value="dokutexit" />');
+    ptln('  <input type="hidden" name="page"   value="texit" />');
     ptln('  <input type="hidden" name="revert"   value="1" />');
     ptln('  <input type="submit" name="submit" class="button" value="'.$this->lang['texit_btn_revert'].'" accesskey="s" />');
     //    ptln('  <input type="reset" name="submit" class="button" value="'.$this->lang['texit_btn_revert'].'" />');
@@ -150,11 +135,11 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
     
     print $this->locale_xhtml('test');
     if (!isset($this->_texit)) {
-      $this->_texit = new texitrender_plugin_dokutexit('wiki:syntax');
+      $this->_texit = new texitrender_plugin_texit('wiki:syntax');
       $this->_texit->add_inputs('<input type="hidden" name="do" value="admin" />');
-      $this->_texit->add_inputs('<input type="hidden" name="page" value="dokutexit" />');
+      $this->_texit->add_inputs('<input type="hidden" name="page" value="texit" />');
     }
-    if ($this->_texit->add_data('info', "author=DokuTeXit\ntitle=Formating syntax\nrecurse=on")) {
+    if ($this->_texit->add_data('info', "author=TeXit\ntitle=Formating syntax\nrecurse=on")) {
 	  print $this->_texit->render();
 	  if ($this->_texit->pdf_exist()) {
 	    print $this->_texit->render_cleanup(1);
@@ -164,7 +149,7 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
     ptln('</form>');
     ptln('<form action="'.wl($ID).'" method="post">');
     ptln('  <input type="hidden" name="do"     value="admin" />');
-    ptln('  <input type="hidden" name="page"   value="dokutexit" />');
+    ptln('  <input type="hidden" name="page"   value="texit" />');
     ptln('  <input type="hidden" name="subpage"   value="ebook" />');
     ptln('  <input type="submit" name="submit" class="button" value="'.
 	 $this->lang['ebook'].'" accesskey="e" />');
@@ -182,7 +167,7 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
     $this->print_textarea('ebook_info', 
 			  isset($_REQUEST['ebook_info']) 
 			  ? $_REQUEST['ebook_info'] 
-			  : "author=DokuTeXit\ntitle=My Ebook\nbackgroundtext=Ebook");
+			  : "author=TeXit\ntitle=My Ebook\nbackgroundtext=Ebook");
     ptln('  <input type="submit" name="submit" class="button" value="'.$this->lang['texit_btn_save'].'" accesskey="s" />');
     print $this->locale_xhtml('ebook_namespaces');
     $this->print_textarea('ebook_namespaces', 
@@ -192,22 +177,22 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
     print $this->show_ns_tree($ID);
     ptln('<p>');
     ptln('  <input type="hidden" name="do"     value="admin" />');
-    ptln('  <input type="hidden" name="page"   value="dokutexit" />');
+    ptln('  <input type="hidden" name="page"   value="texit" />');
     ptln('  <input type="hidden" name="save"   value="1" />');
     ptln('  <input type="hidden" name="subpage" value="ebook" />');
     ptln('  <input type="submit" name="submit" class="button" value="'.$this->lang['texit_btn_save'].'" accesskey="s" />');
     ptln('</form>');
     ptln('<form action="'.wl($ID).'" method="post">');
     ptln('  <input type="hidden" name="do"     value="admin" />');
-    ptln('  <input type="hidden" name="page"   value="dokutexit" />');
+    ptln('  <input type="hidden" name="page"   value="texit" />');
     ptln('  <input type="hidden" name="revert"   value="1" />');
     ptln('  <input type="hidden" name="subpage" value="ebook" />');
     ptln('  <input type="submit" name="submit" class="button" value="'.$this->lang['texit_btn_revert'].'" accesskey="s" />');
     ptln('</form>');
     if (!isset($this->_texit)) {
-      $this->_texit = new texitrender_plugin_dokutexit($ID);
+      $this->_texit = new texitrender_plugin_texit($ID);
       $this->_texit->add_inputs('<input type="hidden" name="do" value="admin" />');
-      $this->_texit->add_inputs('<input type="hidden" name="page" value="dokutexit" />');
+      $this->_texit->add_inputs('<input type="hidden" name="page" value="texit" />');
       $this->_texit->add_inputs('<input type="hidden" name="subpage" value="ebook" />');
       $this->_texit->add_inputs('<input type="hidden" name="ebook" value="ebook" />');
       $this->_texit->add_inputs('<input type="hidden" name="ebook_namespaces" value="'.
@@ -225,7 +210,7 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
 	}
       }
     } else {  
-      if ($this->_texit->add_data('info', "author=DokuTeXit\ntitle=Formating syntax\nrecurse=on")) {
+      if ($this->_texit->add_data('info', "author=TeXit\ntitle=Formating syntax\nrecurse=on")) {
 	print $this->_texit->render();
 	if ($this->_texit->pdf_exist()) {
 	  print $this->_texit->render_cleanup(1);
@@ -305,7 +290,7 @@ class admin_plugin_dokutexit extends Dokuwiki_Admin_Plugin {
   function print_textarea($id, $data) {
     ptln('<textarea name="'.$id.'" id="wiki__text"  cols="60" rows="10" class="edit" tabindex="1">');
     print $data;
-    ptln('</textarea>');      
+    ptln('</textarea>');
   }
 
   function show_config() {
