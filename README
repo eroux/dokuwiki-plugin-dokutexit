@@ -7,6 +7,19 @@ address).
 The plugin seems to be under GPLv2 license, which I'll assume.
 
 The plugin supposes you have a recent TeXLive installation (it assumes 2013, but
-it should have almost no problem with 2012 version or with MikTeX).
+it should have almost no problem with 2012 version or with MikTeX), with 
+latexmk.
 
 Not that you need to install imagemagick for image conversion.
+
+There is a documentation in help/, but it seems Dokywiki doesn't allow plugins
+to install docs, so you'll have to install it by yourself (you can, for
+instance, follow the link in the administration page). What seems to me as
+the most elegant solution is to create your help pages in the
+manual:pluginsmanual namespace and to add 
+
+    ====== Plugins ======
+    
+    {{nstoc :fr:wiki:pluginsmanual 2}}
+
+in manual/start. Feel free to do otherwise
