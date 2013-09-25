@@ -368,9 +368,6 @@ class texitrender_plugin_texit {
 	$info .= '\\dokubackground{';
 	$info .= $latex->_latexEntities($hash['backgroundtext']) . "}\n";
       }
-    } else {
-      $info .= '\\dokubackground{'. $latex->_latexEntities(DOKU_URL) . "}\n";
-    } 
     foreach ( array_keys($this->_texit_conf) as $val ) {
       if (isset($hash[$val])) {
 	$this->_texit_conf[$val] = $hash[$val];
