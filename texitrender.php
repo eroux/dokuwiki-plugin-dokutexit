@@ -351,7 +351,7 @@ class texitrender_plugin_texit {
       }
     }
     $info .= "pdfcreator = {texit},\n";
-    $info .= "pdfproducer = {dokuwiki + TeXit (" . $info .= $this->_texit_conf['mode'] . " mode)}\n";
+    $info .= "pdfproducer = {dokuwiki + TeXit (" . $this->_texit_conf['mode'] . " mode)}}\n";
     if (isset($hash['title'])) {
       $info .= '\\title{' . $latex->_latexEntities($hash['title']) . "}\n";
     } else {
@@ -448,7 +448,7 @@ class texitrender_plugin_texit {
     switch ($this->_texit_conf['mode'])
     {
     case "latex":
-      $cmdline .= "-e \$dvipdf = \"dvipdfm %O -o %D %S\"; -pdfdvi "; // TODO: test, comes from http://users.phys.psu.edu/~collins/software/latexmk-jcc/
+      $cmdline .= "-e '\$dvipdf = \"dvipdfm %O -o %D %S\";' -pdfdvi "; // TODO: test, comes from http://users.phys.psu.edu/~collins/software/latexmk-jcc/
       break;
     case "pdflatex":
       $cmdline .= "-pdf ";
@@ -457,7 +457,7 @@ class texitrender_plugin_texit {
       $cmdline .= "-pdf -pdflatex=lualatex ";
       break;
     case "xelatex":
-      $cmdline .= "-latex=xelatex -e \$dvipdf = \"dvipdfmx %O -o %D %S\"; -pdfdvi ";
+      $cmdline .= "-latex=xelatex -e '\$dvipdf = \"dvipdfm %O -o %D %S\";' -pdfdvi ";
       break;    
     }
     $cmdline .= $this->latex['file'] . ' 2>&1 ';
