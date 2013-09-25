@@ -25,14 +25,18 @@ DIRS = conf/ lang/
 
 all : tgz zip
 
-zip: $(FILES) $(DIRS)
+zip: clean $(FILES) $(DIRS)
 	@echo "Building zip file..."
-	@zip -rq $(NAME).zip --exclude \*~ -- $(FILES) $(DIRS)
+	@mkdir -p $(NAME)
+	@cp -R $(FILES) $(DIRS) $(NAME)
+	@zip -rq $(NAME).zip --exclude \*~ -- $(NAME)
 
-tgz: $(FILES) $(DIRS)
+tgz: clean $(FILES) $(DIRS)
 	@echo "Building tgz file..."
-	@tar -czf $(NAME).tgz --exclude=\*\*/\*~ -- $(FILES) $(DIRS)
+	@mkdir -p $(NAME)
+	@cp -R $(FILES) $(DIRS) $(NAME)
+	@tar -czf $(NAME).tgz --exclude=\*\*/\*~ -- $(NAME)
 
 clean: 	
-	rm -rf $(NAME).tgz $(NAME).zip
+	@rm -rf $(NAME).tgz $(NAME).zip $(NAME)
 
