@@ -41,19 +41,21 @@ You can use [nsbpc] to have per-namespace (and thus per-language) configuration.
 
 When clicking on the export button, the plugin will compute an .pdf file containing the produced PDF. The output for page *namespace:subnamespace:id* will be named *namespace:subnamespace:id.pdf* and will automaticall be plae in *media:namespace:subnamespace*.
 
-The intermediate .tex files will be placed in the *media:namespace:subnamespace:tex* namespace (warning: this means that it will pollute the *tex* subnamespace if it exists!). Suppose you have the following pages:
+The intermediate .tex files will be placed in the *texit:namespace:subnamespace* namespace. Suppose you have the following pages:
 
  * *namespace:subnamespace:page1*
  * *namespace:subnamespace:page2*
 
-, if you generate all files, the  *media:namespace:subnamespace* namespace will contain:
+, if you generate all files, the *media:namespace:subnamespace* namespace will contain:
 
  * *page1.pdf*
+ * *page1-tex.zip*, a zip file containing page1.pdf and the necessary tex files to compile it (see herebelow for the structure)
  * *page2.pdf*
- * *subnamespace.pdf*
- * a *tex* subnamespace
+ * *page2-tex.zip*
+ * *all.pdf*, pdf containing page1 and page2 (the whole namespace)
+ * *all-tex.zip*
 
-This *tex* subnamespace will itself contain:
+The *texit:namespace:subnamespace* namespace will contain:
 
  * *texitcommands.tex* : a copy of the corresponding file
  * *page1-content.tex* : the translation content of the *page1* page in TeX (no header, not a complete tex file)
@@ -62,12 +64,22 @@ This *tex* subnamespace will itself contain:
   * *texitcommands.tex*
   * *page1-content.tex*
  * *page2.tex* : idem for page2
- * *subnamespace.tex* : an adaptation of *header-namespace.tex* for *subnamespace.pdf*, `\include`ing the following tex files:
+ * *all.tex* : an adaptation of *header-namespace.tex* for *all.pdf*, `\include`ing the following tex files:
   * *texitcommands.tex*
   * *page1-content.tex*
   * *page2-content.tex*
 
+The structure of the *.zip* files in *media:namespace:subnamespace* is the following one (if we take *all-tex.zip*):
+
+ * *all.pdf*
+ * *all.tex*
+ * *texitcommands.tex*
+ * *page1-content.tex*
+ * *page2-content.tex*
+
 When the user asks the pdf, intermediate TeX files will be produced only if the page has changed. As the compilation is done with latexmk, no unnecessary recompilation will happen if the page (or all pages in the namespace) haven't changed.
+
+Optionnaly, a prefix may be prepended to all filenames. It is `$prefix,namespace,subnamespace,` (with `$prefix` another configuration option. This is useful if you want people to download files with explicit filenames referencing your wiki.
 
 ### Warning for server saturation
 
