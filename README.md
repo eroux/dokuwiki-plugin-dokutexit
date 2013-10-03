@@ -39,13 +39,48 @@ You can use [nsbpc] to have per-namespace (and thus per-language) configuration.
 
 ### Output files
 
-When clicking on the export button, the plugin will compute an .zip file containing all necessary TeX files as well as the produced PDF.
+When clicking on the export button, the plugin will compute an .pdf file containing the produced PDF. The output for page *namespace:subnamespace:id* will be named *namespace:subnamespace:id.pdf* and will automaticall be plae in *media:namespace:subnamespace*.
 
-The output for page *namespace:subnamespace:id* will be placed in *media:namespace:subnamespace:id-texit.zip*, and the output for namespace *namespace:subnamespace* will be placed in *media:namespace:subnamespace:subnamespace-texit.zip*.
+The intermediate .tex files will be placed in the *media:namespace:subnamespace:tex* namespace (warning: this means that it will pollute the *tex* subnamespace if it exists!). Suppose you have the following pages:
 
-These archives will contain a *subnamespace-date* directory, in which files will be named *namespace_subnamespace_id.tex* (and *.pdf*).
+ * *namespace:subnamespace:page1*
+ * *namespace:subnamespace:page2*
 
-The *commands.tex* file will appear separately (as *texitcommands.tex*). If the export is just one page, the file containing the content of the page will be *namespace_subnamespace_id-content.tex*. In the case of a namespace export, each page will appear as a *.tex* file with the same name convention, and the main TeX file including the others will be called *namespace_subnamespace.tex*.
+, if you generate all files, the  *media:namespace:subnamespace* namespace will contain:
+
+ * *page1.pdf*
+ * *page2.pdf*
+ * *subnamespace.pdf*
+ * a *tex* subnamespace
+
+This *tex* subnamespace will itself contain:
+
+ * *texitcommands.tex* : a copy of the corresponding file
+ * *page1-content.tex* : the translation content of the *page1* page in TeX (no header, not a complete tex file)
+ * *page2-content.tex* : idem for page2
+ * *page1.tex* : an adptation of *header-page.tex* for *page1.pdf*, `\include`ing the following tex files:
+  * *texitcommands.tex*
+  * *page1-content.tex*
+ * *page2.tex* : idem for page2
+ * *subnamespace.tex* : an adaptation of *header-namespace.tex* for *subnamespace.pdf*, `\include`ing the following tex files:
+  * *texitcommands.tex*
+  * *page1-content.tex*
+  * *page2-content.tex*
+
+When the user asks the pdf, intermediate TeX files will be produced only if the page has changed. As the compilation is done with latexmk, no unnecessary recompilation will happen if the page (or all pages in the namespace) haven't changed.
+
+### Warning for server saturation
+
+Robots will follow every link, which means that they will generate all pdfs for all pages and namespaces when they'll reference your website. This can lead to server saturation and crash!
+
+To prevent robots from following the links to PDF export, add a `robots.txt` in the root namespace of your wiki, reading
+
+```
+User-agent: *
+Disallow: /*?do=texit*
+```
+
+(untested yet).
 
 ### CMK integration
 
