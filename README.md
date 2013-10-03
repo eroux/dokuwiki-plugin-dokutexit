@@ -18,6 +18,8 @@ This version comes with a set of updates and changes:
  * possibility to export a whole namespace
  * less fancy exports (no ugly background link)
  * integration with [refnotes] for bibliography (only BibTeX entries)
+ * removing complex administration interface
+ * remove zip functions from outer space, using zlib instead
 
 ### Configuration
 
@@ -155,6 +157,8 @@ it should have almost no problem with 2012 version or with MikTeX), with
 latexmk.
 
 Not that you need to install imagemagick for image conversion.
+
+You need to be able to use zip functions in php (on Debian, install `libphp-pclzip` package).
 
 It has only been tested on a recent dokuwiki (Release 2013-05-10a "Weatherwax").
 
