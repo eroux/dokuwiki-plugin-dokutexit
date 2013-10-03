@@ -1,4 +1,0 @@
-===== DokuTeXit Begin/Header  =====
-
-The Begin/Header part control everything before '''\begin{document}''' 
-You can add LaTeX packages there.

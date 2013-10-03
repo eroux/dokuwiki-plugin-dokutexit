@@ -1,4 +1,0 @@
-====== Ebook ====
-Export you wiki site by specify namespaces
-
-FIXME : This feature is not yet functional.

@@ -1,8 +1,0 @@
-====== Gestionnaire de configuration de DokuTeXit ======
-
-Utilisez cette page pour contrôler les paramètres de votre installation de Dokuwiki.
-
-N'oubliez pas d'utiliser le bouton **Sauver** avant de quitter cette page, sinon vos modifications
-seront perdues.
-
-

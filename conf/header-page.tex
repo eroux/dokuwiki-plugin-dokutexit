@@ -1,19 +1,15 @@
-%%\documentclass[twoside,a4paper,10pt]{report} % for one-page printing
-\documentclass[twoside,a5paper,11pt]{book} % for book printing
-\usepackage{ifluatex}
-\usepackage{ifxetex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi>0
 %%
 %% This section is for LuaTeX and XeTeX
 %% Warning: polyglossia works with LuaTeX starting from TL2013
 %%
   \usepackage{polyglossia}
-  \setmainlanguage{dutch}
+  \setmainlanguage{english}
 \else
 %%
 %% next section is for latex and pdflatex:
 %%
-  \usepackage[dutch]{babel} %% Use your own babel language
+  \usepackage[french]{babel} %% Use your own babel language
   \usepackage{ucs}
   \usepackage[utf8x]{inputenc}
   \usepackage[T1]{fontenc}
@@ -24,6 +20,7 @@
 %%
 %% and this section is common
 %%
+%% uncomment these if you use them
 \usepackage{supertabular}  % very big tables
 \usepackage{pdflscape}     % idem
 \usepackage{lastpage}      % trick last page

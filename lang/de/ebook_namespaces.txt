@@ -1,2 +1,0 @@
-===== Namespaces =====
-Set namespaces you want export, one by line.

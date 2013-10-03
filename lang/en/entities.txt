@@ -1,5 +1,0 @@
-===== DokuTeXit Entities  =====
-Here you can setup entities translations bettween Dokuwiki and Latex
-Typography to Latex entities
-Order does matter!
- 

@@ -1,4 +1,0 @@
-===== Dokutexit Kommando  =====
-
-Der Abschnitt ''Kommando'' steuert LaTeX-Kommandos, welche von //TeXit// verwendet werden um die LaTeX Datei zu erzeugen. Hier können Sie LaTeX ''newcommands'' hinzufügen, welche Sie anschließend in Ihren Dokumenten verwenden können.
-
