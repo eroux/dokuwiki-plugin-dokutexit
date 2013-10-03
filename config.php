@@ -22,91 +22,147 @@
  * @package texitconfig
  *
  */
-if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
+if(!defined('DOKU_INC')) die();
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 if(!defined('PLUGIN_TEXIT')) define('PLUGIN_TEXIT',DOKU_PLUGIN.'texit/');
+if(!defined('PLUGIN_TEXIT_CONF')) define('PLUGIN_TEXIT_CONF',PLUGIN_TEXIT.'conf/');
 
-class texitConfig {
-  var $_error = NULL;
-  // =======================================================================
-  // Variable Definitions
-  // =======================================================================
-  
+class texit_config {
+  /**
+   * Required method, see https://www.dokuwiki.org/devel:helper_plugins
+   * TODO
+   */
+  function getMethods(){
+    return array();
+  }
+  var $id;
+  var $namespace_mode;
+  var $nsbpc;
+  var $conf;
   // =======================================================================
   // constructor
   // =======================================================================
+  function __constructor($id, $namespace_mode, $conf) {
+    $this->id = $id;
+    $this->ns = getNS(cleanID($id));
+    $this->namespace_mode = $namespace_mode;
+    $this->nsbpc = loadHelper('nsbpc');
+    $this->conf = $conf;
+  }
+
+  function getMediaNS() {
+    return 'media:'.getNS($id);
+  }
   
-  /**
-   * Initializes the class
-   *
-   * @param formnumber
-   */
-  function texitConfig($name) {
-    global $conf;
-    global $php_errormsg;
-    $this->_name = $name;
-    $this->_texit_path = PLUGIN_TEXIT;
-    $this->_settings_path = $this->_texit_path . 'settings/';
-    $this->_configfile = $this->_settings_path . $name . '.cfg';
-    if (!is_dir($this->_settings_path)) {
-      if (!io_mkdir_p($this->_settings_path)) {
-	$this->_error = array("mkdir_err", 
-			      $this->_settings_path, 
-			      $php_errormsg);
+  function getTexitNS() {
+    return 'texit:'.getNS($id);
+  }
+
+  function getHeaderFN() {
+    // first we look for nsbpc headers
+    // the names are 'texit-namespace' or 'texit-page'
+    $header_name = "texit-page";
+    if ($this->namespace_mode) {
+      $header_name = "texit-namespace";
+    }
+    $found = $this->nsbpc->getConfFN($header_name, $this->ns);
+    if ($found) {
+      return $found;
+    }
+    // No nsbpc configuration was found, now looking in the conf/ directory of
+    // the plugin. Names are different here...
+    $header_name = "header-page.tex";
+    if ($this->namespace_mode) {
+      $header_name = "header-namespace.tex";
+    }
+    if (is_readable(PLUGIN_TEXIT_CONF.$header_name)) {
+      return PLUGIN_TEXIT_CONF.$header_name;
+    }
+    return false;
+  }
+
+  function getCommandsFN() {
+    // first we look through nsbpc
+    $found = $this->nsbpc->getConfFN("texit-commands", $this->ns);
+    if ($found) {
+      return $found;
+    }
+    // No nsbpc configuration was found, now looking in the conf/ directory of
+    // the plugin.
+    if (is_readable(PLUGIN_TEXIT_CONF."commands.tex")) {
+      return PLUGIN_TEXIT_CONF."commands.tex";
+    }
+    return false;
+  }
+
+ /* This function returns an array of all IDs of pages to be rendered by TeXit.
+  *
+  */
+  function get_all_IDs() {
+    $global $conf;
+    $list = array();
+    if ($this->namespace_mode) {
+      $opts = array('listdirs'  => false,
+                    'listfiles' => true,
+                    'pagesonly' => true,
+                    'depth'     => 1,
+                    'skipacl'   => false, // to check for read right
+                    'sneakyacl' => true,
+                    'showhidden'=> false,
+                    );
+      // we cannot use $opts in search_list or in search_namespaces, see
+      // https://bugs.dokuwiki.org/index.php?do=details&task_id=2858
+      search($list,$conf['datadir'],'search_universal',$opts,$this->id);
+      return $list;
+    } else {
+      return array(array('id' => $this->id));
+    }
+  }
+
+ /* Returns an array with base and destination filenames. Works with full paths.
+  */
+  function get_all_files() {
+    // this gives us all the page ids that need txt->tex conversion:
+    $id_array = $this->get_all_IDs();
+    $result = array();
+    // now we put them all in the $result array
+    // TODO
+    // and we add the header and command
+    // TODO
+  }
+  
+ /*
+  * This functions returns true if $base is more recent that $dest, and
+  * false otherwise.
+  *
+  */
+  function needs_update($base, $dest) {
+    return filemtime($base) > filemtime($dest);
+  }
+  
+ /* This function sets the TeX compilation environment up by copying the files
+  * in the good folders and renames them.
+  */
+  function setup_files() {
+    $filenames = $this->get_all_files();
+    foreach($filenames as $base => $dest) {
+      list ($type, $destfn) = $dest;
+      if ($this->needs_update($base, $destfn)) {
+        switch($type) {
+          case "header":
+            $this->compile_header($base, $destfn);
+            break;
+          case "commands":
+            $this->simple_copy($base, $destfn);
+            break;
+          case "tex":
+            $this->compile_tex($base, $destfn);
+            break;
+          default:
+            break;
+        }
       }
     }
-  }
-
-  // ========================================================================
-  // public functions
-  // ========================================================================
-  function is_readable() {
-    return is_readable($this->_configfile);
-  }
-
-  function is_exist() {
-    return file_exists($this->_configfile);
-  }
-
-  function is_writeable() {
-    return is_writeable($this->_configfile);
-  }
-
-  function get_error() {
-    return $this->_error;
-  }
-
-  function is_error() {
-    return !is_null($this->_error);
-  }
-
-  function read() {
-    global $php_errormsg;
-    if (!$this->is_readable()) {
-      $this->_error = array("read_err", $this->_configfile, $php_errormsg);
-      msg("No config file: " . $this->_configfile, -1);
-      return "";
-    }
-    return io_readfile($this->_configfile);
-  }
-
-  function write($data) {
-    global $php_errormsg;
-    if ($this->is_exist() && !$this->is_writeable()) {
-      $this->_error = array("write_err", $this->_configfile, $php_errormsg);
-      return;
-    }
-    io_savefile($this->_configfile, $data);
-  }
-
-  function delete() {
-    if (@unlink($this->_configfile)) {
-      $this->_error = array("unlink_err", $this->_configfile, $php_errormsg);
-    }
-  }
-
-  function get_filename() {
-    return $this->_configfile;
   }
   
 }

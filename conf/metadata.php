@@ -18,10 +18,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * --------------------------------------------------------------------
  *
- * @author    Danjer <danjer@doudouke.org>
  */
-$meta['zipsources'] = array('onoff'); // Show Download zip button
-$meta['dnl_button'] = array('onoff'); // Show Download as PDF button
-$meta['force_clean_up'] = array('onoff'); // Show Force Clean up button
+$meta['ns_button'] = array('onoff'); // Show Download as PDF button
 $meta['latex_mode'] = array('multichoice','_choices' => array('latex', 'pdflatex', 'lualatex', 'xelatex'));
-$meta['latex_path'] = array('string');
+$meta['latexmk_path'] = array('string');
+$meta['use_prefix'] = array('onoff');
+$meta['pre_prefix'] = array('string');
+$meta['prefix_separator'] = array('string');

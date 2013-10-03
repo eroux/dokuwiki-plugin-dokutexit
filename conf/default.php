@@ -20,8 +20,9 @@
  *
  * @author    Danjer <danjer@doudouke.org>
  */
-$conf['zipsources'] = false; // Show Download zip button
-$conf['dnl_button'] = true; // Show Download as PDF button
-$conf['force_clean_up'] = false; // Show Force Clean up button
+$conf['ns_button'] = true; // Show download namespace button
 $conf['latex_mode'] = 'lualatex';
-$conf['latex_path'] = '';
+$conf['latexmk_path'] = '';
+$conf['use_prefix'] = false;
+$conf['pre_prefix'] = '';
+$conf['prefix_separator'] = ',';
