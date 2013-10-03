@@ -39,9 +39,10 @@ class texit_config {
   var $namespace_mode;
   var $nsbpc;
   var $conf;
-  // =======================================================================
-  // constructor
-  // =======================================================================
+ /*
+  * I didn't use a helper plugin because I needed a constructor.
+  *
+  */
   function __constructor($id, $namespace_mode, $conf) {
     $this->id = $id;
     $this->ns = getNS(cleanID($id));
@@ -50,15 +51,19 @@ class texit_config {
     $this->conf = $conf;
   }
 
-  function getMediaNS() {
+  function get_media_NS() {
     return 'media:'.getNS($id);
   }
   
-  function getTexitNS() {
+  function get_texit_NS() {
     return 'texit:'.getNS($id);
   }
+  
+  function get_zip_name() {
+    return 'media
+  }
 
-  function getHeaderFN() {
+  function get_header_FN() {
     // first we look for nsbpc headers
     // the names are 'texit-namespace' or 'texit-page'
     $header_name = "texit-page";
@@ -81,7 +86,7 @@ class texit_config {
     return false;
   }
 
-  function getCommandsFN() {
+  function get_commands_FN() {
     // first we look through nsbpc
     $found = $this->nsbpc->getConfFN("texit-commands", $this->ns);
     if ($found) {
@@ -120,6 +125,13 @@ class texit_config {
   }
 
  /* Returns an array with base and destination filenames. Works with full paths.
+  *
+  * The returned array has the following structure:
+  *    [base] => (type, destfn)
+  * where:
+  *  * base is the base filename (like /path/to/dkwiki/pages/ns/id.txt)
+  *  * type is either "header", "commands" or "tex"
+  *  * destfn is the destination filename (prefix included)
   */
   function get_all_files() {
     // this gives us all the page ids that need txt->tex conversion:
@@ -130,7 +142,42 @@ class texit_config {
     // and we add the header and command
     // TODO
   }
+
+ /* This function takes three arguments:
+  *    * base is the full path of the base header file
+  *           (for instance /path/to/dkwiki/lib/plugin/texit/conf/header-page.tex)
+  *    * dest is the full path of the destination header file
+  *    * all_files is the table returned by get_all_files()
+  *
+  * It reads $base, adds \input lines for $all_files and writes the result in
+  * $dest.
+  */
+  function compile_header($base, $dest, $all_files) {
   
+  }
+
+ /* This function takes two arguments:
+  *    * base is the full path of the base page file
+  *           (for instance /path/to/dkwiki/data/pages/ns/id.txt)
+  *    * dest is the full path of the destination tex file
+  *
+  * It reads $base, renders it into TeX and writes $dest.
+  */
+  function compile_tex($base, $dest) {
+  
+  }
+
+ /* This function takes two arguments:
+  *    * base is the full path of the base page file
+  *           (for instance /path/to/dkwiki/data/pages/ns/id.txt)
+  *    * dest is the full path of the destination tex file
+  *
+  * It copies $base into $dest.
+  */
+  function simple_copy($base, $dest) {
+  
+  }
+
  /*
   * This functions returns true if $base is more recent that $dest, and
   * false otherwise.
@@ -165,6 +212,47 @@ class texit_config {
     }
   }
   
+ /* This function calls latexmk with the good options on the good files.
+  */
+  function compile_pdf() {
+    chdir($this->get_texit_ns());
+    if (isset($this->conf['path']) 
+      && trim($this->_texit_conf['latexmk_path']) != "") {
+      $cmdline = $this->_texit_conf['latexmk_path'] . DIRECTORY_SEPARATOR;
+    } else {
+      $cmdline = '';
+    }
+    $cmdline .= "latexmk -f ";
+    switch ($this->_texit_conf['mode'])
+    {
+    case "latex":
+      // TODO: test, comes from http://users.phys.psu.edu/~collins/software/latexmk-jcc/
+      $cmdline .= "-e '\$dvipdf = \"dvipdfm %O -o %D %S\";' -pdfdvi "; 
+      break;
+    case "pdflatex":
+      $cmdline .= "-pdf ";
+      break;
+    case "lualatex":
+      $cmdline .= "-pdf -pdflatex=lualatex ";
+      break;
+    case "xelatex":
+      $cmdline .= "-latex=xelatex -e '\$dvipdf = \"dvipdfmx %O -o %D %S\";' -pdfdvi ";
+      break;    
+    }
+    $cmdline .= $this->dest_header . ' 2>&1 ';
+    $log = @exec($cmdline, $output, $ret);
+    if ($ret) {
+      print($ret);
+    }
+    // TODO: copy pdf to media
+  }
+
+ /* This function zips the good files in the texit namespace in a .zip archive
+  * in the media namespace.
+  */
+  function compile_zip() {
+    $dest = $this->get_zip_name();
+  }
 }
 
 ?>
