@@ -23,9 +23,9 @@ if(!defined('DOKU_INC')) die();
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 if(!defined('PLUGIN_TEXIT')) define('PLUGIN_TEXIT',DOKU_PLUGIN.'texit/');
 if(!defined('PLUGIN_TEXIT_CONF')) define('PLUGIN_TEXIT_CONF',PLUGIN_TEXIT.'conf/');
-require_one(PLUGIN_TEXIT.'texitrender.php');
+require_once(PLUGIN_TEXIT.'texitrender.php');
 
-class texit_config_plugin_texit {
+class config_plugin_texit {
   var $id;
   var $ns;
   var $namespace_mode;
@@ -40,11 +40,12 @@ class texit_config_plugin_texit {
   * I didn't use a helper plugin because I needed a constructor.
   *
   */
-  function __constructor($id, $namespace_mode, $conf) {
+  function __construct($id, $namespace_mode, $conf, $nsbpc_obj) {
     $this->id = cleanID($id);
     $this->ns = getNS(cleanID($id));
     $this->namespace_mode = $namespace_mode;
-    $this->nsbpc = loadHelper('nsbpc');
+    $this->nsbpc = $nsbpc_obj;
+    //$this->nsbpc = plugin_load('helper', 'nsbpc');
     $this->conf = $conf;
     $this->prefix = $this->set_prefix();
     $this->_set_texit_dir();
@@ -67,12 +68,14 @@ class texit_config_plugin_texit {
   }
 
   function _create_dir($path) {
+    global $conf;
     $path = init_path($path);
     if(empty($path)) {
       // let's create it, recursively
-      $res = io_mkdir_p($path);
+      //$res = io_mkdir_p($path);
+	  $res = mkdir($path, $conf['dmode'], true);
       if(!$res){
-        nice_die("Unable to create directory $path, please create it.");
+        die("Unable to create directory $path, please create it.");
       }
     }
   }
@@ -92,6 +95,7 @@ class texit_config_plugin_texit {
   }
   
   function _set_texit_dir() {
+    global $conf;
     $path = $this->conf['texitdir'];
     // taken from init_paths in inc/init.php
     $path = empty($path) ? $conf['savedir'].'/texit' : $path;
@@ -187,7 +191,7 @@ class texit_config_plugin_texit {
   /* This returns the full path of the commands file we want in the destination
    * texit namespace.
    */
-  function get_dest_command_fn() {
+  function get_dest_commands_fn() {
     return $this->texitdir."/commands.tex";
   }
 
@@ -195,7 +199,7 @@ class texit_config_plugin_texit {
   *
   */
   function get_all_IDs() {
-    $global $conf;
+    global $conf;
     $list = array();
     if ($this->namespace_mode) {
       $opts = array('listdirs'  => false,
@@ -317,6 +321,12 @@ class texit_config_plugin_texit {
   * to evaluate if files need to be recompiled or recopied.
   */
   function setup_files() {
+    if (!is_array($this->all_files)) {
+        $this->get_all_files();
+	  }
+    if (!is_array($this->all_files)) {
+        die("TeXit: cannot analyze files");
+	  }
     foreach($this->all_files as $base => $dest) {
       list ($type, $destfn) = $dest;
       if ($this->_needs_update($base, $destfn)) {
@@ -340,7 +350,10 @@ class texit_config_plugin_texit {
  /* This function calls latexmk with the good options on the good files.
   */
   function _do_latexmk() {
-    chdir($this->get_texit_ns());
+    if (!is_dir($this->texitdir)) {
+      die("TeXit: directory $this->texitdir doesn't exit");
+	}
+    chdir($this->texitdir);
     $basecmdline = '';
     if (isset($this->conf['path']) 
       && trim($this->_texit_conf['latexmk_path']) != "") {

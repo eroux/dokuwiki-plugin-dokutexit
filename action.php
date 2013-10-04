@@ -23,6 +23,7 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
+require_once(DOKU_PLUGIN.'texit/config.php');
 
 class action_plugin_texit extends DokuWiki_Action_Plugin {
   /**
@@ -66,7 +67,7 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
   function get_plugin_config() {
     global $conf;
     if (!$this->configloaded){ $this->loadConfig();}
-    return &$conf['plugin']['texit'];
+    return $conf['plugin']['texit'];
   }
  /* Generates the pdf and returns the URL.
   * $action is the action name (texit or texitns)
@@ -77,7 +78,11 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
     if ($action == "texitns") {
       $namespace_mode = true;
     }
-    $texit = new texit_config(getID(), $namespace_mode, $this->get_plugin_config());
+	// we want to have a nsbpc instance in config.php, but as it's not
+	// a Dokuwiki plugin, we can't... so we get it here and pass it
+	// to config.php
+	$nsbpc_obj = $this->loadHelper('nsbpc');
+    $texit = new config_plugin_texit(getID(), $namespace_mode, $this->get_plugin_config(), $nsbpc_obj);
     $pdfurl = $texit->process();
     $pdfurl = "http://www.luatex.org/svn/trunk/manual/luatexref-t.pdf";
     return $pdfurl;

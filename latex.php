@@ -38,8 +38,6 @@ if ( !defined('DOKU_TAB') ) {
 
 require_once DOKU_INC . 'inc/parser/renderer.php';
 require_once DOKU_INC . 'inc/html.php';
-require_once(DOKU_PLUGIN.'texit/class.texitimage.php');
-
 
 class Doku_Renderer_latex extends Doku_Renderer {
 
