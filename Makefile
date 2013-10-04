@@ -20,7 +20,7 @@
 
 
 NAME = texit
-FILES = syntax.php admin.php texitrender.php latex.php class.texitimage.php class.texitconfig.php README LICENSE.GPLv2 plugin.info.txt
+FILES = syntax.php texitrender.php latex.php config.php README.md LICENSE.GPLv2 plugin.info.txt action.php
 DIRS = conf/ lang/
 
 all : tgz zip
