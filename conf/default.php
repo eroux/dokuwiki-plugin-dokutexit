@@ -25,4 +25,5 @@ $conf['latex_mode'] = 'lualatex';
 $conf['latexmk_path'] = '';
 $conf['use_prefix'] = false;
 $conf['pre_prefix'] = '';
-$conf['prefix_separator'] = ',';
+$conf['prefix_separator'] = ','; // Must be ASCII!! (used in strtr)
+$conf['texitdir'] = '';

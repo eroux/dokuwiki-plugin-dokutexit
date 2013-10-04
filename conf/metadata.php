@@ -25,3 +25,4 @@ $meta['latexmk_path'] = array('string');
 $meta['use_prefix'] = array('onoff');
 $meta['pre_prefix'] = array('string');
 $meta['prefix_separator'] = array('string');
+$meta['texitdir'] = array('string');

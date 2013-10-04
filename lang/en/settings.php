@@ -21,10 +21,10 @@
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Danjer <danjer@doudouke.org>
  */
- 
-// for the configuration manager
-$lang['zipsources'] = 'Show "Download ZIP" button';
-$lang['dnl_button'] = 'Show "Download as PDF" button ';
-$lang['force_clean_up'] = 'Show "Force clean up" button => Not recommended if your wiki is accessible from the internet and it disable xhtml cache';
-$lang['latex_mode'] = 'LaTeX mode: latex, pdflatex, lualatex or xelatex (default pdflatex)';
-$lang['latex_path'] = 'Path to LaTeX (ex: /usr/bin)';
+$lang['ns_button'] = 'Show download namespace PDF button';
+$lang['latex_mode'] = 'TeX engine to use';
+$lang['latexmk_path'] = 'Path to latexmk program (leave empty if in you $PATH)';
+$lang['use_prefix'] = 'Set to true if you want to prepend the namespace in your pdf filename';
+$lang['pre_prefix'] = 'A string to prepend to the prefix (eg. your website url)';
+$lang['prefix_separator'] = 'ASCII character used to replace ":" as namespace separator in the prefix';
+$lang['texitdir'] = 'Directory where TeXit plugin will store TeX files (leave empty to use $conf[\'datadir\']."texit")';

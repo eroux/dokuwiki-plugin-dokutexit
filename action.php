@@ -55,7 +55,7 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
     }
     $this->loadConfig(); // we need to get the usual plugin config
     $pdfurl = $this->generate_pdf($event->data);
-    $this->redirect_to_pdf($pdfurl);
+    $this->redirect_to_pdf(rawurlencode($pdfurl));
     $event->preventDefault();
     $event->stopPropagation();
     exit();  
@@ -73,15 +73,14 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
   */
   function generate_pdf($action) {
     global $conf;
-    $namespace = false;
+    $namespace_mode = false;
     if ($action == "texitns") {
-      $namespace = true;
+      $namespace_mode = true;
     }
-    $texit_config = new texit_config(getID(), $namespace, $this->get_plugin_config());
-    $texit_config->setup_files();
-    $texit_config->render_tex();
-    $texit_config->compile();
-    return "http://www.luatex.org/svn/trunk/manual/luatexref-t.pdf";
+    $texit = new texit_config(getID(), $namespace_mode, $this->get_plugin_config());
+    $pdfurl = $texit->process();
+    $pdfurl = "http://www.luatex.org/svn/trunk/manual/luatexref-t.pdf";
+    return $pdfurl;
   }
 
  /* A simple function to redirect the client to the PDF.

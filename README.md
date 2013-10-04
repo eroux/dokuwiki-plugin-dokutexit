@@ -59,15 +59,15 @@ The intermediate .tex files will be placed in the *texit:namespace:subnamespace*
 
 The *texit:namespace:subnamespace* namespace will contain:
 
- * *texitcommands.tex* : a copy of the corresponding file
+ * *commands.tex* : a copy of the corresponding file
  * *page1-content.tex* : the translation content of the *page1* page in TeX (no header, not a complete tex file)
  * *page2-content.tex* : idem for page2
  * *page1.tex* : an adptation of *header-page.tex* for *page1.pdf*, `\include`ing the following tex files:
-  * *texitcommands.tex*
+  * *commands.tex*
   * *page1-content.tex*
  * *page2.tex* : idem for page2
  * *all.tex* : an adaptation of *header-namespace.tex* for *all.pdf*, `\include`ing the following tex files:
-  * *texitcommands.tex*
+  * *commands.tex*
   * *page1-content.tex*
   * *page2-content.tex*
 
@@ -75,13 +75,15 @@ The structure of the *.zip* files in *media:namespace:subnamespace* is the follo
 
  * *all.pdf*
  * *all.tex*
- * *texitcommands.tex*
+ * *commands.tex*
  * *page1-content.tex*
  * *page2-content.tex*
 
+All filenames will have characters \_ escaped as \- for good TeX integration. This means that bad things may happen if you have *foo\-bar* and *foo\_bar* in the same namespace.
+
 When the user asks the pdf, intermediate TeX files will be produced only if the page has changed. As the compilation is done with latexmk, no unnecessary recompilation will happen if the page (or all pages in the namespace) haven't changed.
 
-Optionnaly, a prefix may be prepended to all filenames. It is `$prefix,namespace,subnamespace,` (with `$prefix` another configuration option. This is useful if you want people to download files with explicit filenames referencing your wiki.
+Optionnaly, a prefix may be prepended to PDF filename. It is `$prefix,namespace,subnamespace,` (see configuration manager for options about this). This is useful if you want people to download files with explicit filenames referencing your wiki.
 
 ### Warning for server saturation
 
