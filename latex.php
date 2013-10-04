@@ -79,7 +79,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
     $this->putcmd("label{" . md5($cleanid) . "}");
     if (isset($this->info['current_file_id'])) 
       $this->putnl("%%Start: " . $cleanid . ' => ' 
-		   . $this->info['current_file_id']);
+           . $this->info['current_file_id']);
     else
       $this->putnl("%%Start: " . $cleanid . ' => ' . wikiFN($cleanid));
   }
@@ -118,12 +118,12 @@ class Doku_Renderer_latex extends Doku_Renderer {
   function header($text, $level) {
     global $conf;
     $levels = array(
-		    1=>'dokutitlelevelone',
-		    2=>'dokutitleleveltwo',
-		    3=>'dokutitleleveltree',
-		    4=>'dokutitlelevelfour',
-		    5=>'dokutitlelevelfive',
-		    );
+            1=>'dokutitlelevelone',
+            2=>'dokutitleleveltwo',
+            3=>'dokutitleleveltree',
+            4=>'dokutitlelevelfour',
+            5=>'dokutitlelevelfive',
+            );
 
     if ( isset($levels[$level]) ) {
       $token = $levels[$level];
@@ -305,10 +305,10 @@ class Doku_Renderer_latex extends Doku_Renderer {
    */
   function preformatted($text) {
     $this->nlputcmdnl("small");
-    $this->putcmdnl("begin{verbatimtab}");		//need overload
+    $this->putcmdnl("begin{verbatimtab}");        //need overload
     $this->put(wordwrap(str_replace('verbatimtab', 'verbatim', 
-				    $text), $this->info['wrapcodelength'], "\n"));
-    $this->nlputcmdnl("end{verbatimtab}");		//need overload
+                    $text), $this->info['wrapcodelength'], "\n"));
+    $this->nlputcmdnl("end{verbatimtab}");        //need overload
     $this->putcmdnl("normalsize");
   }
 
@@ -334,20 +334,23 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
   function code($text, $lang = NULL) {
     if ( !$lang ) {
-	$this->preformatted($text);
+      $this->preformatted($text);
     } else {
       switch ($lang) { //Latex syntax hightlight is quite old...
-      case "shell":
-	$lang = "sh";
-      case "bash":
-	$lang = "sh";
-      case "latex":
-	$lang = "TeX";
+        case "shell":
+          $lang = "sh";
+          break;
+        case "bash":
+          $lang = "sh";
+          break;
+        case "latex":
+          $lang = "TeX";
+          break;
       }
-      $this->nlputcmdnl("lstset{language=$lang}");	//need overload
-      $this->putcmd("begin{lstlisting}");		//need overload
+      $this->nlputcmdnl("lstset{language=$lang}");    //need overload
+      $this->putcmd("begin{lstlisting}");        //need overload
       $this->put(wordwrap($text, $this->info['wrapcodelength'], DOKU_LF));
-      $this->nlputcmdnl("end{lstlisting}");		//need overload
+      $this->nlputcmdnl("end{lstlisting}");        //need overload
     }
   }
 
@@ -368,20 +371,20 @@ class Doku_Renderer_latex extends Doku_Renderer {
   function smiley($smiley) {
     if ( array_key_exists($smiley, $this->smileys) ) {
       if (!(isset($this->smileys_ps[$smiley]) 
-	    && @file_exists($this->smileys_ps[$smiley]))) {
-	$img = new TexItImage(DOKU_INC . 'lib/images/smileys/'. $this->smileys[$smiley]);
-	if ($img->is_error) {
-	  $this->unformatted('img error'.DOKU_INC.'lib/images/smileys/'. $this->smileys[$smiley]);    
-	  return ;
-	} 
-	$filename = $img->get_output_filename();
-	$this->smileys_ps[$smiley] = $filename;
+        && @file_exists($this->smileys_ps[$smiley]))) {
+    $img = new TexItImage(DOKU_INC . 'lib/images/smileys/'. $this->smileys[$smiley]);
+    if ($img->is_error) {
+      $this->unformatted('img error'.DOKU_INC.'lib/images/smileys/'. $this->smileys[$smiley]);    
+      return ;
+    } 
+    $filename = $img->get_output_filename();
+    $this->smileys_ps[$smiley] = $filename;
       }
       if ($this->smileys_ps[$smiley] == '') 
-	{
-	  $this->putent($smiley);
-	  return;
-	}
+    {
+      $this->putent($smiley);
+      return;
+    }
       $this->putcmd("includegraphics[height=1em]{"); // need config for that
       $this->put($this->smileys_ps[$smiley]);
       $this->put("}");
@@ -466,8 +469,8 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
     $md5 = md5($cleanid);
     array_push($this->dokulinks, array('id' => $id, 'name' => $name, 
-				       'type' => 'internal',
-				       'hash' => $md5));
+                       'type' => 'internal',
+                       'hash' => $md5));
     $hash = NULL;
     $this->putcmd('hyperref[');
     //    if (is_null($hash)) 
@@ -497,10 +500,10 @@ class Doku_Renderer_latex extends Doku_Renderer {
     $name = $this->_getLinkTitle($name, $default, $isImage, $id);
     if ( !$isImage ) {
       if ( $exists ) {
-	$class='wikilink1';
-	// do some recurse
+    $class='wikilink1';
+    // do some recurse
       } else {
-	$class='wikilink2';
+    $class='wikilink2';
       }
     } else {
       $class='media';
@@ -520,25 +523,13 @@ class Doku_Renderer_latex extends Doku_Renderer {
     $title_org = $title;
     $title = $this->_getLinkTitle($title, $link, $isImage);
     if ($isImage) {
-      //      $this->putnl('%% Title: ' . $title);
-      //      $this->putcmd('href{' . $link . '}{');
-      //      $this->putcmd('hyperimage{' . $title . '}{');
       $this->put($title);
-//       if (isset($title_org['title']))
-// 	$this->put($title_org['title']);
-//       else
-// 	$this->put($title_org['src']);
-//      $this->put('}}');
     } else {
       if ( $title ) {
-	$this->put($this->_formatLink(array('url' => $link, 
-					    'title' => $title)));
-	
-//	$this->putcmd('href{'.$link.'}{');
-//	$this->putent($title);
-//	$this->put('}');
+        $this->put($this->_formatLink(array('url' => $link, 
+                        'title' => $title)));
       } else {
-	$this->putcmd('url{'.$link.'}');
+        $this->putcmd('url{'.$link.'}');
       }
     } 
   }
@@ -550,7 +541,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
     if (is_array($title)) {
       $url = '';
       if ( isset($this->interwiki[$wikiName]) ) {
-	$url = $this->interwiki[$wikiName];
+    $url = $this->interwiki[$wikiName];
       }
       $title['caption'] = $url.$wikiUri;
     }
@@ -559,21 +550,21 @@ class Doku_Renderer_latex extends Doku_Renderer {
       $class = preg_replace('/[^_\-a-z0-9]+/i','_',$wikiName);
       $imagefile = DOKU_INC . 'lib/images/interwiki/' . $class . '.gif';
       if (!(isset($this->interwiki_ps[$class]) 
-	    && @file_exists($this->interwiki_ps[$class]))
-	  && @file_exists($imagefile)) {
-	$img = new TexItImage($imagefile);
-	if ($img->is_error) {
-	  msg('img error: '. $imagefile, -1);
-	  $this->unformatted('img error: '. $imagefile);
-	  return ;
-	} 
-	$filename = $img->get_output_filename();
-	$this->interwiki_ps[$class] = $filename;
+        && @file_exists($this->interwiki_ps[$class]))
+      && @file_exists($imagefile)) {
+    $img = new TexItImage($imagefile);
+    if ($img->is_error) {
+      msg('img error: '. $imagefile, -1);
+      $this->unformatted('img error: '. $imagefile);
+      return ;
+    } 
+    $filename = $img->get_output_filename();
+    $this->interwiki_ps[$class] = $filename;
       }
       if (isset($this->interwiki_ps[$class])) {
-	$this->putcmd("includegraphics[height=1em]{"); // need config for that
-	$this->put($this->interwiki_ps[$class], 1);
-	$this->put("}", 1);
+    $this->putcmd("includegraphics[height=1em]{"); // need config for that
+    $this->put($this->interwiki_ps[$class], 1);
+    $this->put("}", 1);
       }
     } else {
       $this->put($linkname); //link is an image
@@ -583,27 +574,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
     if ( isset($this->interwiki[$wikiName]) ) {
       $url = $this->interwiki[$wikiName];
       $this->put($this->_formatLink(array('url' => $url, 
-				'title' => $linkname)));
-       
-//       $this->putcmd('href{');
-//       $this->put(str_replace('#', '\#', $url.$wikiUri), 1);
-//       $this->put('}{', 1);
-//       $this->put($linkname);
-//        if ($title) {
-// 	 $this->putent($title);
-//        } else {
-// 	 list($baselink, $name) = split('#', $link, 2);
-// 	 if ($name) {
-// 	   $this->putent($name);
-// 	 } else {
-// 	   list($baselink, $name) = split('>', $link, 2);
-// 	   if ($name) 
-// 	     $this->putent($name);
-// 	   else 
-// 	     $this->putent($link);
-// 	 }
-//       }
-//       $this->put('}', 1);
+                'title' => $linkname)));
     } else {
       $this->putcmd('url{');
       $this->put($link);
@@ -629,15 +600,15 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
   // @TODO
   function internalmedialink (
-			      $src,$title=NULL,$align=NULL,$width=NULL,$height=NULL,$cache=NULL
-			      ) {
+                  $src,$title=NULL,$align=NULL,$width=NULL,$height=NULL,$cache=NULL
+                  ) {
     
   }
 
   // @TODO
   function externalmedialink(
-			     $src,$title=NULL,$align=NULL,$width=NULL,$height=NULL,$cache=NULL
-			     ) {
+                 $src,$title=NULL,$align=NULL,$width=NULL,$height=NULL,$cache=NULL
+                 ) {
     if ( $title ) {
       $this->doc .= '{{'.$src.'|'.$title.'}}';
     } else {
@@ -678,13 +649,13 @@ class Doku_Renderer_latex extends Doku_Renderer {
             $end   = ($end > $params['max']) ? $params['max'] : $end;;
         }
 
-	//$this->doc .= '<ul class="rss">';
-	$this->listu_open();
+    //$this->doc .= '<ul class="rss">';
+    $this->listu_open();
         if($rc){
             for ($x = $start; $x != $end; $x += $mod) {
                 $item = $feed->get_item($x);
                 //$this->doc .= '<li><div class="li">';
-		$this->listitem_open(1);
+        $this->listitem_open(1);
                 $this->externallink($item->get_permalink(),
                                     $item->get_title());
                 if($params['author']){
@@ -693,16 +664,16 @@ class Doku_Renderer_latex extends Doku_Renderer {
                         $name = $author->get_name();
                         if(!$name) $name = $author->get_email();
                         if($name) 
-			  $this->cdata(' '.$lang['by'].' '.$name);
-			//$this->doc .= ' '.$lang['by'].' '.$name;
+              $this->cdata(' '.$lang['by'].' '.$name);
+            //$this->doc .= ' '.$lang['by'].' '.$name;
                     }
                 }
                 if($params['date']){
-		  $this->cdata(' ('.$item->get_date($conf['dformat']).')');
-		  //$this->doc .= ' ('.$item->get_date($conf['dformat']).')';
+          $this->cdata(' ('.$item->get_date($conf['dformat']).')');
+          //$this->doc .= ' ('.$item->get_date($conf['dformat']).')';
                 }
                 if($params['details']){
-		  //$this->doc .= '<div class="detail">';
+          //$this->doc .= '<div class="detail">';
                     if($htmlok){
                         $this->cdata($item->get_description());
                     }else{
@@ -712,24 +683,24 @@ class Doku_Renderer_latex extends Doku_Renderer {
                 }
 
                 //$this->doc .= '</div></li>';
-		$this->listitem_close();
+        $this->listitem_close();
             }
         }else{
-	  //$this->doc .= '<li><div class="li">';
-	    $this->listitem_open(1);
-	    $this->emphasis_open();
+      //$this->doc .= '<li><div class="li">';
+        $this->listitem_open(1);
+        $this->emphasis_open();
             //$this->doc .= '<em>'.$lang['rssfailed'].'</em>';
             $this->cdata($lang['rssfailed']);
-	    $this->emphasis_close();
+        $this->emphasis_close();
             $this->externallink($url);
 //             if($conf['allowdebug']){
 //                 $this->doc .= '<!--'.hsc($feed->error).'-->';
 //             }
-	    //  $this->doc .= '</div></li>';
-	    $this->listitem_close();
+        //  $this->doc .= '</div></li>';
+        $this->listitem_close();
         }
-	//        $this->doc .= '</ul>';
-	$this->listu_close();
+    //        $this->doc .= '</ul>';
+    $this->listu_close();
     }
 
   function table_open($maxcols = NULL, $numrows = NULL) {
@@ -777,12 +748,12 @@ class Doku_Renderer_latex extends Doku_Renderer {
   function table_analyse_open($maxcols = NULL, $numrows = NULL) {
     $this->_current_table_args = array($maxcols, $numrows);
     array_push($this->_current_table, 
-	       array('type' => '_open', 
-		     'args' => array($maxcols, $numrows)));
+           array('type' => '_open', 
+             'args' => array($maxcols, $numrows)));
   }
 
   function table_analyse_size() { //calculate max aprox size of each cell 
-    $longest_row = 0; 	 //and find the longest row
+    $longest_row = 0;      //and find the longest row
     $row_len = 0;
     $cell_len = 0;
     $cell_word = 0;
@@ -795,33 +766,33 @@ class Doku_Renderer_latex extends Doku_Renderer {
     //    msg("Memory Usage Table open: ". memory_get_usage(), -1);
     foreach ( $this->_current_table as $action ) {
       if ($action['type'] == 'put') {
-	$row_len += $action['size'];
-	$cell_len += $action['size'];
-	$cell_text .= $action['text'];
-	$cell_word = $action['word_size'];
+    $row_len += $action['size'];
+    $cell_len += $action['size'];
+    $cell_text .= $action['text'];
+    $cell_word = $action['word_size'];
       }
       if ($action['type'] == 'row_open') {
-	$row_len = 0;
-	$i++;
+    $row_len = 0;
+    $i++;
       }
       if ($action['type'] == 'row_close') {
-	if ($longest_row < $row_len) 
-	  $longest_row = $row_len;
-	$row_len = 0;
-	$j = 0;
+    if ($longest_row < $row_len) 
+      $longest_row = $row_len;
+    $row_len = 0;
+    $j = 0;
       }
       if ($action['type'] == 'cell_open' || $action['type'] == 'header_open') {
-	$j++;
+    $j++;
       }
       if ($action['type'] == 'cell_close' || $action['type'] == 'header_close') {
-	if ($maxcols_len[$j] < $cell_len) {
-	  $maxcols_len[$j] = $cell_len;
-	  $maxcols_word[$j] = $this->biggest_word_size($cell_text);
-	  $maxcols_text[$j] = trim($cell_text);
-	}
-	$cell_len = 0;
-	$cell_word = 0;
-	$cell_text = '';
+    if ($maxcols_len[$j] < $cell_len) {
+      $maxcols_len[$j] = $cell_len;
+      $maxcols_word[$j] = $this->biggest_word_size($cell_text);
+      $maxcols_text[$j] = trim($cell_text);
+    }
+    $cell_len = 0;
+    $cell_word = 0;
+    $cell_text = '';
       }
     }
     //    msg("longest row: " . $longest_row);
@@ -830,8 +801,8 @@ class Doku_Renderer_latex extends Doku_Renderer {
     $max = 0;
     for ($i = 1; $i <= $maxcols; $i++) { // Make some adjustment
       if ($max < $maxcols_len[$i]) {
-	$max = $maxcols_len[$i];
-	$max_i = $i;
+    $max = $maxcols_len[$i];
+    $max_i = $i;
       }
     }
     $maxcols_word[$max_i] = NULL;
@@ -849,14 +820,14 @@ class Doku_Renderer_latex extends Doku_Renderer {
     //    msg("Memory Usage Table close: ". memory_get_usage(), -1);
     if ($numrows > $this->info['tablemaxrows']) { // need config
       if ($longest_row < $this->info['tablerowlength'])  //need config 
-	$this->_current_table_mode = 'supertabular';
+    $this->_current_table_mode = 'supertabular';
       else 
-	$this->_current_table_mode = 'supertabular_landscape';
+    $this->_current_table_mode = 'supertabular_landscape';
     } else {
       if ($longest_row < $this->info['tablerowlength']) { //need config 
-	$this->_current_table_mode = 'tabular';
+    $this->_current_table_mode = 'tabular';
       } else {
-	$this->_current_table_mode = 'tabularx';
+    $this->_current_table_mode = 'tabularx';
       }
     }
     $this->putnl("%% Table analyse:");
@@ -866,20 +837,20 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
     foreach ( $this->_current_table as $action ) { //Ouput analysed table
       if ($action['type'] == 'row_open') 
-	$i++;
+    $i++;
       if ($action['type'] == 'cell_open' || $action['type'] == 'header_open') {
-	$j++;
-	$this->_current_table_cols_size = $this->_current_table_maxcols_size[$j];
+    $j++;
+    $this->_current_table_cols_size = $this->_current_table_maxcols_size[$j];
       }
       if ($action['type'] == 'row_close') 
-	$j = 0;
+    $j = 0;
       if ($action['type'] == 'put') {
-	$this->put($action['text']);
-	unset($action['text']);
+    $this->put($action['text']);
+    unset($action['text']);
       } else {
-	$table_mode = $this->_current_table_mode . $action['type'];
-	list($arg1, $arg2) = $action['args'];
-	$this->$table_mode($arg1, $arg2);
+    $table_mode = $this->_current_table_mode . $action['type'];
+    list($arg1, $arg2) = $action['args'];
+    $this->$table_mode($arg1, $arg2);
       }
     }
     //msg("Memory Usage B: ". memory_get_usage(), -1);
@@ -894,44 +865,44 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
   function table_analyserow_open() {
     array_push($this->_current_table, 
-	       array('type' => 'row_open', 
-		     'args' => array()));
+           array('type' => 'row_open', 
+             'args' => array()));
   }
   
   function table_analyserow_close() {
     array_push($this->_current_table, 
-	       array('type' => 'row_close', 
-		     'args' => array()));
+           array('type' => 'row_close', 
+             'args' => array()));
   }
   
   function table_analyseheader_open($colspan = 1, $align = NULL) {
     array_push($this->_current_table, 
-	       array('type' => 'header_open', 
-		     'args' => array($colspan, $align)));
+           array('type' => 'header_open', 
+             'args' => array($colspan, $align)));
   }
 
   function table_analyseheader_close() {
     array_push($this->_current_table, 
-	       array('type' => 'header_close', 
-		     'args' => array()));
+           array('type' => 'header_close', 
+             'args' => array()));
   }
 
   function table_analysecell_open($colspan = 1, $align = NULL) {
     array_push($this->_current_table, 
-	       array('type' => 'cell_open', 
-		     'args' => array($colspan, $align)));
+           array('type' => 'cell_open', 
+             'args' => array($colspan, $align)));
   }
 
   function table_analysecell_close() {
     array_push($this->_current_table, 
-	       array('type' => 'cell_close', 
-		     'args' => array()));
+           array('type' => 'cell_close', 
+             'args' => array()));
   }
 
   // Table tabular way
   function tabular_open($maxcols = NULL, $numrows = NULL) {
     $this->_current_tab_cols = 0;
-    if ($this->info['usetablefigure'] == "on")
+    if ($this->info['usetablefigure'])
       $this->putcmdnl("begin{figure}[h]");
     else 
       $this->putcmdnl("vspace{0.8em}");
@@ -946,7 +917,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
   function tabular_close() {
     $this->putcmdnl("hline");
     $this->putcmdnl("end{tabular}");
-    if ($this->info['usetablefigure'] == "on")
+    if ($this->info['usetablefigure'])
       $this->putcmdnl("end{figure}");
     else
       $this->putcmdnl("vspace{0.8em}");
@@ -983,19 +954,19 @@ class Doku_Renderer_latex extends Doku_Renderer {
       $this->putcmd("multicolumn{". $colspan . "}");
       $this->put("{");
       if ($this->_current_tab_cols == 0)
-	$this->put("|");
+    $this->put("|");
       switch ($align) {
       case "right" :
-	$this->put("r");
-	break;
+    $this->put("r");
+    break;
       case "left" :
-	$this->put("l");
-	break;
+    $this->put("l");
+    break;
       case "center" :
-	$this->put("c");
-	break;
+    $this->put("c");
+    break;
       default:
-	$this->put("l");
+    $this->put("l");
       }
       $this->put("|}");
       $this->put("{");
@@ -1014,7 +985,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
   function tabularx_open($maxcols = NULL, $numrows = NULL) {
     $this->_current_tab_cols = 0;
-    if ($this->info['usetablefigure'] == "on")
+    if ($this->info['usetablefigure'])
       $this->putcmdnl("begin{figure}[h]");
     else
       $this->putcmdnl("vspace{0.8em}");
@@ -1024,19 +995,19 @@ class Doku_Renderer_latex extends Doku_Renderer {
     for ($i = 1; $i <= $maxcols; $i++) {
       //      $this->put("X|");
       if (is_null($this->_current_table_maxcols_size[$i])
-	  || $this->_current_table_maxcols_size[$i] == 0 
-	  || $this->_current_table_maxcols_size[$i] > $this->info['biggesttableword']) 
-	$this->put("X|");
+      || $this->_current_table_maxcols_size[$i] == 0 
+      || $this->_current_table_maxcols_size[$i] > $this->info['biggesttableword']) 
+    $this->put("X|");
       else
-	$this->put("p{" . ($this->_current_table_maxcols_size[$i] * 0.80). "em}|");
+    $this->put("p{" . ($this->_current_table_maxcols_size[$i] * 0.80). "em}|");
     }
     $this->put("}");
     $this->put("%% ");
     for ($i = 1; $i <= $maxcols; $i++) {
       if (is_null($this->_current_table_maxcols_size[$i]))
-	$this->put("X");
+    $this->put("X");
       else
-	$this->put($this->_current_table_maxcols_size[$i]);
+    $this->put($this->_current_table_maxcols_size[$i]);
       $this->put(" | ");
     }
     $this->putnl();
@@ -1045,7 +1016,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
   function tabularx_close() {
     $this->putcmdnl("hline");
     $this->putcmdnl("end{tabularx}");
-    if ($this->info['usetablefigure'] == "on")
+    if ($this->info['usetablefigure'])
       $this->putcmdnl("end{figure}");
     else
       $this->putcmdnl("vspace{0.8em}");
@@ -1082,19 +1053,19 @@ class Doku_Renderer_latex extends Doku_Renderer {
       $this->putcmd("multicolumn{". $colspan . "}");
       $this->put("{");
       if ($this->_current_tab_cols == 0)
-	$this->put("|");
+    $this->put("|");
       switch ($align) {
       case "right" :
-	$this->put("r");
-	break;
+    $this->put("r");
+    break;
       case "left" :
-	$this->put("l");
-	break;
+    $this->put("l");
+    break;
       case "center" :
-	$this->put("c");
-	break;
+    $this->put("c");
+    break;
       default:
-	$this->put("l");
+    $this->put("l");
       }
       $this->put("|}");
       $this->put("{");
@@ -1186,19 +1157,19 @@ class Doku_Renderer_latex extends Doku_Renderer {
       $this->putcmd("multicolumn{". $colspan . "}");
       $this->put("{");
       if ($this->_current_tab_cols == 0)
-	$this->put("|");
+    $this->put("|");
       switch ($align) {
       case "right" :
-	$this->put("r");
-	break;
+    $this->put("r");
+    break;
       case "left" :
-	$this->put("l");
-	break;
+    $this->put("l");
+    break;
       case "center" :
-	$this->put("c");
-	break;
+    $this->put("c");
+    break;
       default:
-	$this->put("l");
+    $this->put("l");
       }
       $this->put("|}");
       $this->put("{");
@@ -1252,11 +1223,11 @@ class Doku_Renderer_latex extends Doku_Renderer {
   }
 
   function mediatops($filename, $title=NULL, $align=NULL, $width=NULL,
-		     $height=NULL, $cache=NULL, $linking=NULL) {
+             $height=NULL, $cache=NULL, $linking=NULL) {
     //    if ((is_null($align) || $align == 'center') && is_null($title)) {
     if ((is_null($align) || $align == 'center') || !is_null($title)) {
       return $this->mediatops_old($filename, $title, $align, $width, $height,
-			   $cache, $linking);
+               $cache, $linking);
     }
     $img = new TexItImage($filename);
     if ($img->is_error) {
@@ -1270,37 +1241,37 @@ class Doku_Renderer_latex extends Doku_Renderer {
     } else {
       $this->putcmd("begin{wrapfigure}{", -1);
       if ($align == "left")
-	$align = 'l';
+    $align = 'l';
       else if ($align == "right")
-	$align = 'r';
+    $align = 'r';
       else if ($align == "center")
-	$align = 'c';
+    $align = 'c';
       else 
-	$align = 'l';
+    $align = 'l';
       $this->putnl($align . "}{0pt}", -1);
       $this->putcmd("includegraphics", -1); // need config for that
       if ($width || $height) {
-	$this->put("[", -1);
-	if ($height) 
-	  $this->put("height=" . $height. "pt", -1);
-	if ($width && $height)
-	  $this->put(",", -1);
-	if ($width) 
-	  $this->put("width=" . $width . "pt", -1);
-	$this->put("]", -1);
+    $this->put("[", -1);
+    if ($height) 
+      $this->put("height=" . $height. "pt", -1);
+    if ($width && $height)
+      $this->put(",", -1);
+    if ($width) 
+      $this->put("width=" . $width . "pt", -1);
+    $this->put("]", -1);
       }
       $this->put("{", -1);
       $this->put($img->get_output_filename(), -1);
       $this->put("}\n", -1);
       if (isset($title)) {
-	$this->putcmd("caption{", -1);
-	if (substr($title, 0, 5) == 'http:') 
-	  $this->_formatLink(array('url' => $title, 
-				   'title' => $title,
-				   'noflush' => 1));
-	else 
-	  $this->putent($title, -1);
-	$this->putnl("}", -1);
+    $this->putcmd("caption{", -1);
+    if (substr($title, 0, 5) == 'http:') 
+      $this->_formatLink(array('url' => $title, 
+                   'title' => $title,
+                   'noflush' => 1));
+    else 
+      $this->putent($title, -1);
+    $this->putnl("}", -1);
       }
       $this->putcmdnl("end{wrapfigure}", -1);
       return $this->put_flush();
@@ -1308,7 +1279,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
   }
 
   function mediatops_old($filename, $title=NULL, $align=NULL, $width=NULL,
-		     $height=NULL, $cache=NULL, $linking=NULL) {
+             $height=NULL, $cache=NULL, $linking=NULL) {
     $img = new TexItImage($filename);
     if ($img->is_error) {
       $this->unformatted('img '. $filename . '('. $mime . '=>' . $ext . ')'); 
@@ -1320,59 +1291,59 @@ class Doku_Renderer_latex extends Doku_Renderer {
       return '';
     } else {
       if (!is_null($align) || !is_null($title)) {
-	$this->putcmdnl("begin{figure*}[h]", -1);
-	if ($align == "left") {
-	  $align = 'flushleft';
-	  $this->putcmdnl("raggedright", -1);
-	}
-	if ($align == "right") {
-	  $align = 'flushright';
-	  $this->putcmdnl("raggedleft", -1);
-	}
-	if ($align == "center")
-	  $this->putcmdnl("centering", -1);
-	else {
-	  //	  $this->putcmdnl("begin{" . $align . "}", -1);
-// 	  $this->putcmdnl("hfill", -1);
-	}
+    $this->putcmdnl("begin{figure*}[h]", -1);
+    if ($align == "left") {
+      $align = 'flushleft';
+      $this->putcmdnl("raggedright", -1);
+    }
+    if ($align == "right") {
+      $align = 'flushright';
+      $this->putcmdnl("raggedleft", -1);
+    }
+    if ($align == "center")
+      $this->putcmdnl("centering", -1);
+    else {
+      //      $this->putcmdnl("begin{" . $align . "}", -1);
+//       $this->putcmdnl("hfill", -1);
+    }
       }
       $this->putcmd("includegraphics", -1); // need config for that
       if ($width || $height) {
-	$this->put("[", -1);
-	if ($height) 
-	  $this->put("height=" . $height. "pt", -1);
-	if ($width && $height)
-	  $this->put(",", -1);
-	if ($width) 
-	  $this->put("width=" . $width . "pt", -1);
-	$this->put("]", -1);
+    $this->put("[", -1);
+    if ($height) 
+      $this->put("height=" . $height. "pt", -1);
+    if ($width && $height)
+      $this->put(",", -1);
+    if ($width) 
+      $this->put("width=" . $width . "pt", -1);
+    $this->put("]", -1);
       }
       $this->put("{", -1);
       $this->put($img->get_output_filename(), -1);
       $this->put("}\n", -1);
       if (isset($title)) {
-	$this->putcmd("caption{", -1);
-	if (substr($title, 0, 5) == 'http:') 
-	  $this->_formatLink(array('url' => $title, 
-				   'title' => $title,
-				   'noflush' => 1));
-	else 
-	  $this->putent($title, -1);
-	$this->putnl("}", -1);
+    $this->putcmd("caption{", -1);
+    if (substr($title, 0, 5) == 'http:') 
+      $this->_formatLink(array('url' => $title, 
+                   'title' => $title,
+                   'noflush' => 1));
+    else 
+      $this->putent($title, -1);
+    $this->putnl("}", -1);
       }
       if (!is_null($align) || !is_null($title)) {
-	// if ($align != 'center') {
-// 	  $this->putcmdnl("end{" . $align. "}", -1);
-// 	  $this->putcmdnl("hfill", -1);
-// 	}
-	$this->putcmdnl("end{figure*}", -1);
+    // if ($align != 'center') {
+//       $this->putcmdnl("end{" . $align. "}", -1);
+//       $this->putcmdnl("hfill", -1);
+//     }
+    $this->putcmdnl("end{figure*}", -1);
       }
       return $this->put_flush();
     }
   }
 
   function internalmedia ($src, $title=NULL, $align=NULL, $width=NULL,
-			  $height=NULL, $cache=NULL, $linking=NULL) {
+              $height=NULL, $cache=NULL, $linking=NULL) {
     global $conf;
     global $ID;
     $filename = mediaFN($src);
@@ -1380,7 +1351,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
     list($ext,$mime) = mimetype($src);
     if(substr($mime,0,5) == 'image') {
       $img = $this->mediatops($filename, $title, $align, $width,
-		       $height, $cache, $linking);
+               $height, $cache, $linking);
       $this->put($img);
       return;
     }
@@ -1392,7 +1363,6 @@ class Doku_Renderer_latex extends Doku_Renderer {
     $this->put(']{');
     $this->putent($title);
     $this->put('}');
-    
     //    $this->unformatted('unkown '. $filename . '('. $mime . '=>' . $ext . ')');    
   }
 
@@ -1428,10 +1398,10 @@ class Doku_Renderer_latex extends Doku_Renderer {
     
     //decide if download needed:
     if( $cache == 0 ||                             // never cache
-	($mtime != 0 && $cache != -1) ||           // exists but no endless cache
-	($mtime == 0) ||                           // not exists
-	($cache != -1 && $mtime < time()-$cache)   // expired
-	) {
+    ($mtime != 0 && $cache != -1) ||           // exists but no endless cache
+    ($mtime == 0) ||                           // not exists
+    ($cache != -1 && $mtime < time()-$cache)   // expired
+    ) {
       if(io_download($url,$local)) {
         return $local;
       }else{
@@ -1451,20 +1421,20 @@ class Doku_Renderer_latex extends Doku_Renderer {
    * @todo don't add link for flash
    */
   function externalmedia ($src, $title=NULL, $align=NULL, $width=NULL,
-			  $height=NULL, $cache=NULL, $linking=NULL) {
+              $height=NULL, $cache=NULL, $linking=NULL) {
     global $conf;
     
     list($ext,$mime) = mimetype($src);
     if(substr($mime,0,5) == 'image') {
       $filename = $this->get_from_URL($src,$ext,$this->calc_cache($cache));
       if(!$filename) {
-	//download failed - redirect to original URL
-	//make default images.
-	$this->unformatted('externalmedia dnl error: ' . $src . ' ext: ' . $ext. ' cache: '. $cache);
+    //download failed - redirect to original URL
+    //make default images.
+    $this->unformatted('externalmedia dnl error: ' . $src . ' ext: ' . $ext. ' cache: '. $cache);
       } else {
-	$img = $this->mediatops($filename, $title, $align, $width,
-				$height, $cache, $linking);
-	$this->put($img);
+    $img = $this->mediatops($filename, $title, $align, $width,
+                $height, $cache, $linking);
+    $this->put($img);
       }
       return;
     }else{
@@ -1490,10 +1460,10 @@ class Doku_Renderer_latex extends Doku_Renderer {
     $isImage = false;
     if ( is_null($title) ) {
       if ($conf['useheading'] && $id) {
-	$heading = p_get_first_heading($id);
-	if ($heading) {
-	  return $this->_latexEntities($heading);
-	}
+    $heading = p_get_first_heading($id);
+    if ($heading) {
+      return $this->_latexEntities($heading);
+    }
       }
       return $this->_latexEntities($default);
     } else if ( is_string($title) ) {
@@ -1501,9 +1471,9 @@ class Doku_Renderer_latex extends Doku_Renderer {
     } else if ( is_array($title) ) {
       $isImage = true;
       if (isset($title['caption'])) {
-	$title['title'] = $title['caption'];
+    $title['title'] = $title['caption'];
       } else {
-	$title['title'] = $default;
+    $title['title'] = $default;
       }
       $title['align'] = 'center';
       return $this->_imageTitle($title);
@@ -1545,7 +1515,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
       // make sure tiles are unique
       $num = '';
       while(in_array($title.$num,$this->headers)) {
-	($num) ? $num++ : $num = 1;
+    ($num) ? $num++ : $num = 1;
       }
       $title = $title.$num;
       $this->headers[] = $title;
@@ -1561,7 +1531,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
    * @author Andreas Gohr <andi@splitbrain.org>
    */
   function _media_test ($src, $title=NULL, $align=NULL, $width=NULL,
-			$height=NULL, $cache=NULL) {
+            $height=NULL, $cache=NULL) {
 
     $ret = '';
     list($ext,$mime) = mimetype($src);
@@ -1579,20 +1549,20 @@ class Doku_Renderer_latex extends Doku_Renderer {
   }
 
   function _media($src, $title=NULL, $align=NULL, $width=NULL,
-		   $height=NULL, $cache=NULL) {
+           $height=NULL, $cache=NULL) {
 
     $ret = '';
     list($ext,$mime) = mimetype($src);
     if(substr($mime,0,5) == 'image') {
       $filename = mediaFN($src);
       if (!file_exists($filename)) {
-	$filename = $this->get_from_URL($src,$ext,$this->calc_cache($cache));
-	if(!$filename) {
-	  $this->unformatted('externalmedia dnl error: ' . $src . ' ext: ' . $ext. ' cache: '. $cache);
-	}
+    $filename = $this->get_from_URL($src,$ext,$this->calc_cache($cache));
+    if(!$filename) {
+      $this->unformatted('externalmedia dnl error: ' . $src . ' ext: ' . $ext. ' cache: '. $cache);
+    }
       }
       $ret .= $this->mediatops_old($filename, $title, $align, $width,
-				   $height, $cache, $linking);
+                   $height, $cache, $linking);
     
       //$ret .= '\\hyperimage{';
       //$ret .= ml($src,array('w'=>$width,'h'=>$height,'cache'=>$cache), true, '&', true);
@@ -1614,7 +1584,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
 
   function _media_xhtml ($src, $title=NULL, $align=NULL, $width=NULL,
-		   $height=NULL, $cache=NULL) {
+           $height=NULL, $cache=NULL) {
 
     $ret = '';
 
@@ -1625,43 +1595,43 @@ class Doku_Renderer_latex extends Doku_Renderer {
       $ret .= ' class="media'.$align.'"';
 
       if (!is_null($title)) {
-	$ret .= ' title="'.$this->_xmlEntities($title).'"';
-	$ret .= ' alt="'.$this->_xmlEntities($title).'"';
+    $ret .= ' title="'.$this->_xmlEntities($title).'"';
+    $ret .= ' alt="'.$this->_xmlEntities($title).'"';
       }elseif($ext == 'jpg' || $ext == 'jpeg') {
-	//try to use the caption from IPTC/EXIF
-	require_once(DOKU_INC.'inc/JpegMeta.php');
-	$jpeg =& new JpegMeta(mediaFN($src));
-	if($jpeg !== false) $cap = $jpeg->getTitle();
-	if($cap) {
-	  $ret .= ' title="'.$this->_xmlEntities($cap).'"';
-	  $ret .= ' alt="'.$this->_xmlEntities($cap).'"';
-	}
+    //try to use the caption from IPTC/EXIF
+    require_once(DOKU_INC.'inc/JpegMeta.php');
+    $jpeg =& new JpegMeta(mediaFN($src));
+    if($jpeg !== false) $cap = $jpeg->getTitle();
+    if($cap) {
+      $ret .= ' title="'.$this->_xmlEntities($cap).'"';
+      $ret .= ' alt="'.$this->_xmlEntities($cap).'"';
+    }
       }else{
-	$ret .= ' alt=""';
+    $ret .= ' alt=""';
       }
 
       if ( !is_null($width) )
-	$ret .= ' width="'.$this->_xmlEntities($width).'"';
+    $ret .= ' width="'.$this->_xmlEntities($width).'"';
 
       if ( !is_null($height) )
-	$ret .= ' height="'.$this->_xmlEntities($height).'"';
+    $ret .= ' height="'.$this->_xmlEntities($height).'"';
 
       $ret .= ' />';
 
     }elseif($mime == 'application/x-shockwave-flash') {
       $ret .= '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"'.
-	' codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"';
+    ' codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"';
       if ( !is_null($width) ) $ret .= ' width="'.$this->_xmlEntities($width).'"';
       if ( !is_null($height) ) $ret .= ' height="'.$this->_xmlEntities($height).'"';
       $ret .= '>'.DOKU_LF;
       $ret .= '<param name="movie" value="'.ml($src).'" />'.DOKU_LF;
       $ret .= '<param name="quality" value="high" />'.DOKU_LF;
       $ret .= '<embed src="'.ml($src).'"'.
-	' quality="high"';
+    ' quality="high"';
       if ( !is_null($width) ) $ret .= ' width="'.$this->_xmlEntities($width).'"';
       if ( !is_null($height) ) $ret .= ' height="'.$this->_xmlEntities($height).'"';
       $ret .= ' type="application/x-shockwave-flash"'.
-	' pluginspage="http://www.macromedia.com/go/getflashplayer"></embed>'.DOKU_LF;
+    ' pluginspage="http://www.macromedia.com/go/getflashplayer"></embed>'.DOKU_LF;
       $ret .= '</object>'.DOKU_LF;
 
     }elseif(!is_null($title)) {
@@ -1741,11 +1711,11 @@ class Doku_Renderer_latex extends Doku_Renderer {
    */
   function _imageTitle($img) {
     return $this->_media($img['src'],
-			 $img['title'],
-			 $img['align'],
-			 $img['width'],
-			 $img['height'],
-			 $img['cache']);
+             $img['title'],
+             $img['align'],
+             $img['width'],
+             $img['height'],
+             $img['cache']);
   }
 
   function _simpleTitle($name) {
@@ -1777,7 +1747,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
     foreach ($b as $w) {
       $len = strlen($w);
       if ($max < $len) 
-	$max = $len;
+    $max = $len;
     }
     return $max;
   }
@@ -1795,10 +1765,10 @@ class Doku_Renderer_latex extends Doku_Renderer {
     }
     if ($this->_current_table_mode == 'table_analyse') {
       array_push($this->_current_table, 
-		 array('type' => 'put', 
-		       'text' => $text,
-		       'size' => $mode == 0 ? strlen($text) : $mode
-		       ));
+         array('type' => 'put', 
+               'text' => $text,
+               'size' => $mode == 0 ? strlen($text) : $mode
+               ));
       return;
     } 
     if (is_null($this->_tmphandle))

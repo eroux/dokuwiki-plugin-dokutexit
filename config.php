@@ -23,8 +23,9 @@ if(!defined('DOKU_INC')) die();
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 if(!defined('PLUGIN_TEXIT')) define('PLUGIN_TEXIT',DOKU_PLUGIN.'texit/');
 if(!defined('PLUGIN_TEXIT_CONF')) define('PLUGIN_TEXIT_CONF',PLUGIN_TEXIT.'conf/');
+require_one(PLUGIN_TEXIT.'texitrender.php');
 
-class texit {
+class texit_config_plugin_texit {
   var $id;
   var $ns;
   var $namespace_mode;
@@ -34,6 +35,7 @@ class texit {
   var $texitdir;
   var $prefix;
   var $all_files;
+  var $texit_render_obj; // not initialized by constructor, done only if needed
  /*
   * I didn't use a helper plugin because I needed a constructor.
   *
@@ -110,6 +112,26 @@ class texit {
     return $this->texitdir.'/'.get_common_basename().".pdf";
   }
 
+
+
+ /* This returns 'all' if in namespace-mode, or the escaped ID, without extension.
+  *
+  */
+  function get_common_basename() {
+    if ($this->namespace_mode) {
+      return all;
+    } else {
+      return $this->_escape_fn(noNS($this->id));
+    }
+  }
+
+  /* This returns the full path of the entities.cfg config file. Not searched
+   * through nsbpc.
+   */
+  function get_entities_fn() {
+      return PLUGIN_TEXIT_CONF.'entities.cfg';
+  }
+
   /* This returns the full path of the base header file we take as reference
    * for this compilation. In case nothing is found, false is returned.
    */
@@ -134,17 +156,6 @@ class texit {
       return PLUGIN_TEXIT_CONF.$header_name;
     }
     return false;
-  }
-
- /* This returns 'all' if in namespace-mode, or the escaped ID, without extension.
-  *
-  */
-  function get_common_basename() {
-    if ($this->namespace_mode) {
-      return all;
-    } else {
-      return $this->_escape_fn(noNS($this->id));
-    }
   }
 
   /* This returns the full path of the header file we want in the destination
@@ -258,6 +269,7 @@ class texit {
     foreach($this->all_files as $value) {
       $toappend .= '\dokuinclude{'.basename($value['fn']).'}\n';
     }
+    $toappend .= '\n\end{document}';
     // the we open it in append mode to write things at the end:
     $fh = fopen($dest, 'a') or die("can't open file");
     fwrite($fh, $toappend);
@@ -272,7 +284,11 @@ class texit {
   * It reads $base, renders it into TeX and writes $dest.
   */
   function compile_tex($base, $dest) {
-    // certainly the biggest TODO...
+    if (!$this->texit_render_obj)
+      {
+        $this->texit_render_obj = new texitrender_plugin_texit($this);
+      }
+    $this->texit_render_obj->process($base, $dest);
   }
 
  /* This function takes two arguments:

@@ -1,7 +1,7 @@
 <?php
 /*
- * DokuTeXit plugin, Non-LaTeX configuration settings
- * Copyright (C) ??? Danjer
+ * TeXit plugin, configuration settings
+ * Copyright (C) 2013 Elie Roux <elie.roux@telecom-bretagne.eu>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * --------------------------------------------------------------------
  *
- * @author    Danjer <danjer@doudouke.org>
  */
 $conf['ns_button'] = true; // Show download namespace button
 $conf['latex_mode'] = 'lualatex';
@@ -27,3 +26,5 @@ $conf['use_prefix'] = false;
 $conf['pre_prefix'] = '';
 $conf['prefix_separator'] = ','; // Must be ASCII!! (used in strtr)
 $conf['texitdir'] = '';
+$conf['recurse'] = 'off';
+$conf['recurse_file'] = false;

@@ -1,7 +1,7 @@
 <?php
 /*
- * DokuTeXit plugin, Non-LaTeX configuration settings
- * Copyright (C) ??? Danjer
+ * TeXit plugin, configuration settings
+ * Copyright (C) 2013 Elie Roux <elie.roux@telecom-bretagne.eu>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,3 +26,5 @@ $meta['use_prefix'] = array('onoff');
 $meta['pre_prefix'] = array('string');
 $meta['prefix_separator'] = array('string');
 $meta['texitdir'] = array('string');
+$meta['recurse'] = array('multichoice','_choices' => array('off', 'on', 'chapter', 'appendix'));
+$meta['recurse_file'] = array('onoff');
