@@ -1,3 +1,7 @@
+\documentclass[pagesize,11pt,bibliography=totoc,numbers=noenddot,DIV=10,twoside=semi,headings=small]{scrartcl}
+\usepackage{scrpage2}
+\usepackage{ifluatex}
+\usepackage{ifxetex}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi>0
 %%
 %% This section is for LuaTeX and XeTeX
@@ -23,8 +27,6 @@
 %% uncomment these if you use them
 \usepackage{supertabular}  % very big tables
 \usepackage{pdflscape}     % idem
-\usepackage{lastpage}      % trick last page
-\usepackage{eso-pic}       % if you want to put some text or image in the background
 \usepackage{moreverb}      % for verbatimtab environment FIXME: is this really necessary?
 % Set your margins here:
 \usepackage[top=3cm,bottom=3cm,left=2.5cm,right=2.5cm]{geometry}
@@ -34,6 +36,5 @@
 \usepackage{tabularx}       % provides table insertion
 \usepackage{color}          % provides color handling
 \usepackage{listings}       % provides syntaxic coloration for code
-\usepackage{fancyhdr}       % provides headings management
 \usepackage[normalem]{ulem} % provides underlining (\uline{})
 \usepackage{wrapfig}        % usefull for image 

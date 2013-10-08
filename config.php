@@ -58,10 +58,12 @@ class config_plugin_texit {
       $this->prefix = '';
       return;
     } else {
-      $this->prefix = $this->conf['pre_prefix'];
-      $this->prefix .= ':'.$this->ns;
+	  if (!empty($this->conf['pre_prefix'])) {
+        $this->prefix = $this->conf['pre_prefix'].":";
+	  }
+      $this->prefix .= $this->ns;
       if ($this->conf['prefix_separator']) {
-        str_replace(':', $this->conf['prefix_separator'], $this->prefix);
+        $this->prefix = str_replace(':', $this->conf['prefix_separator'], $this->prefix);
       } // else we keep it this way
       $this->prefix .= $this->conf['prefix_separator'];
     }
@@ -69,11 +71,11 @@ class config_plugin_texit {
 
   function _create_dir($path) {
     global $conf;
-    $path = init_path($path);
-    if(empty($path)) {
+    $res = init_path($path);
+    if(empty($res)) {
       // let's create it, recursively
-      //$res = io_mkdir_p($path);
-	  $res = mkdir($path, $conf['dmode'], true);
+      $res = io_mkdir_p($path);
+	  //$res = mkdir($path, $conf['dmode'], true);
       if(!$res){
         die("Unable to create directory $path, please create it.");
       }
@@ -82,7 +84,13 @@ class config_plugin_texit {
 
 // This function escapes a filename so that it doesn't contain _ character:
   function _escape_fn($fn) {
-    return str_replace('_', '-', $fn);
+    $bn = basename($fn);
+	$bn = str_replace('_', '-', $bn);
+	$dn = dirname($fn);
+	if ($dn == ".") {
+      return $bn;
+	}
+	return dirname($fn).'/'.$bn;
   }
 
   function _set_media_dir() {
@@ -100,6 +108,7 @@ class config_plugin_texit {
     // taken from init_paths in inc/init.php
     $path = empty($path) ? $conf['savedir'].'/texit' : $path;
     $path .= '/'.str_replace(':','/',$this->ns);
+	$path = realpath($path);
     $this->_create_dir($path);
     $this->texitdir = $path;
   }
@@ -111,9 +120,13 @@ class config_plugin_texit {
   function get_pdf_media_fn() {
     return $this->mediadir.'/'.$this->prefix.$this->get_common_basename().".pdf";
   }
-  
+
+  function get_pdf_media_id() {
+    return $this->ns.':'.$this->prefix.$this->get_common_basename().".pdf";
+  }
+
   function get_pdf_texit_fn() {
-    return $this->texitdir.'/'.get_common_basename().".pdf";
+    return $this->texitdir.'/'.$this->get_common_basename().".pdf";
   }
 
 
@@ -123,7 +136,7 @@ class config_plugin_texit {
   */
   function get_common_basename() {
     if ($this->namespace_mode) {
-      return all;
+      return "all";
     } else {
       return $this->_escape_fn(noNS($this->id));
     }
@@ -169,7 +182,7 @@ class config_plugin_texit {
     if ($this->namespace_mode) {
       return $this->texitdir."/all.tex";
     } else {
-      return $this->texitdir.$this->get_common_basename().".tex";
+      return $this->texitdir.'/'.$this->get_common_basename().".tex";
     }
   }
   /* This returns the full path of the base coommands file we take as reference
@@ -238,7 +251,7 @@ class config_plugin_texit {
        continue;
      }
      $fn = wikiFN($this->id);
-     $dest = $this->texitdir.noNS($value['id'])."-content.tex";
+     $dest = $this->texitdir.'/'.noNS($value['id'])."-content.tex";
      $dest = $this->_escape_fn($dest);
      $result[$fn] = array('type' => 'tex', 'fn' => $dest);
    }
@@ -269,15 +282,19 @@ class config_plugin_texit {
     // first we simply copy the file
     $this->simple_copy($base, $dest);
     // we prepare a string to append at the end:
-    $toappend = '\n';
+    $toappend = "\n\\input{commands.tex}\n\\begin{document}\n";
     foreach($this->all_files as $value) {
-      $toappend .= '\dokuinclude{'.basename($value['fn']).'}\n';
+	  switch($value['type']) {
+        case 'tex':
+          $toappend .= '\dokuinclude{'.basename($value['fn'], '.tex')."}\n";
+		  break;
+		default:
+		  break;
+	  }
     }
-    $toappend .= '\n\end{document}';
+    $toappend .= "\n\\end{document}";
     // the we open it in append mode to write things at the end:
-    $fh = fopen($dest, 'a') or die("can't open file");
-    fwrite($fh, $toappend);
-    fclose($fh);
+	file_put_contents($dest, $toappend, FILE_APPEND);
   }
 
  /* This function takes two arguments:
@@ -309,16 +326,22 @@ class config_plugin_texit {
 
  /*
   * This functions returns true if $base is more recent that $dest, and
-  * false otherwise.
-  *
+  * false otherwise. If $dest doesn't exist, then we consider it needs
+  * update and thus return true.
   */
   function _needs_update($base, $dest) {
+    if (!@file_exists($dest) || !@file_exists($dest)) {
+        return true;
+	  }
     return filemtime($base) > filemtime($dest);
   }
   
  /* This function sets the TeX compilation environment up by copying the files
   * in the good folders and renames them. It uses file modification timestamps
   * to evaluate if files need to be recompiled or recopied.
+  *
+  * The returned value is a boolean: true if something has been updated, and
+  * false otherwise.
   */
   function setup_files() {
     if (!is_array($this->all_files)) {
@@ -327,12 +350,14 @@ class config_plugin_texit {
     if (!is_array($this->all_files)) {
         die("TeXit: cannot analyze files");
 	  }
+	$needsupdate = false;
     foreach($this->all_files as $base => $dest) {
-      list ($type, $destfn) = $dest;
+      $destfn = $dest['fn'];
       if ($this->_needs_update($base, $destfn)) {
-        switch($type) {
+	    $needsupdate = true;
+        switch($dest['type']) {
           case "header":
-            $this->compile_header($base, $destfn);
+            $this->compile_header($base, $destfn, $this->all_files);
             break;
           case "commands":
             $this->simple_copy($base, $destfn);
@@ -345,6 +370,7 @@ class config_plugin_texit {
         }
       }
     }
+	return $needsupdate;
   }
   
  /* This function calls latexmk with the good options on the good files.
@@ -355,34 +381,43 @@ class config_plugin_texit {
 	}
     chdir($this->texitdir);
     $basecmdline = '';
-    if (isset($this->conf['path']) 
-      && trim($this->_texit_conf['latexmk_path']) != "") {
-      $basecmdline = $this->_texit_conf['latexmk_path'] . DIRECTORY_SEPARATOR;
+    if (isset($this->conf['latexmk_path']) 
+      && trim($this->conf['latexmk_path']) != "") {
+      $basecmdline = $this->conf['latexmk_path'] . DIRECTORY_SEPARATOR;
     } else {
       $basecmdline = '';
     }
     $cmdline = $basecmdline."latexmk -f ";
-    switch ($this->_texit_conf['mode'])
+	print("toto: ".$this->conf['latex_mode']);
+    switch ($this->conf['latex_mode'])
     {
-    case "latex":
-      // TODO: test, comes from http://users.phys.psu.edu/~collins/software/latexmk-jcc/
-      $cmdline .= "-e '\$dvipdf = \"dvipdfm %O -o %D %S\";' -pdfdvi "; 
-      break;
-    case "pdflatex":
-      $cmdline .= "-pdf ";
-      break;
-    case "lualatex":
-      $cmdline .= "-pdf -pdflatex=lualatex ";
-      break;
-    case "xelatex":
-      $cmdline .= "-latex=xelatex -e '\$dvipdf = \"dvipdfmx %O -o %D %S\";' -pdfdvi ";
-      break;    
+      case "latex":
+        // TODO: test, comes from http://users.phys.psu.edu/~collins/software/latexmk-jcc/
+        $cmdline .= "-e '\$dvipdf = \"dvipdfm %O -o %D %S\";' -pdfdvi "; 
+        break;
+      case "pdflatex":
+        $cmdline .= "-pdf ";
+        break;
+      case "lualatex":
+        $cmdline .= "-pdf -pdflatex=lualatex ";
+        break;
+      case "xelatex":
+        $cmdline .= "-latex=xelatex -e '\$dvipdf = \"dvipdfmx %O -o %D %S\";' -pdfdvi ";
+        break;
+	  default:
+	    // error
+	    break;
     }
-    $cmdline .= $this->dest_header . ' 2>&1 ';
-    $log = @exec($cmdline, $output, $ret);
+	$file = basename($this->get_dest_header_fn());
+    $cmdline .= $file . ' 2>&1 ';
+	print($cmdline);
+	$ret = 0;
+    @exec($cmdline, $output, $ret);
     if ($ret) {
-      print($ret);
+      print("<br/>TeXit error: latexmk returned error code ".$ret."<br/>\n<br/>Log:<br/>\n");
+	  print_r(implode("<br/>\n", $output));
     }
+	print($log);
     // at the end, we clean temporary files. There is currently no way to tell
     // latexmk to clean at the end of the compilation... quite a shame...
     // An email has been written to the author in this sense.
@@ -397,8 +432,9 @@ class config_plugin_texit {
   * in the media namespace.
   */
   function compile_zip() {
-    $zipfn = $this->get_zip_name();
-    // TODO: if the file already exists, remove it.
+    $zipfn = $this->get_zip_fn();
+	print($zipfn);
+    // if the file already exists and needs update, remove it.
     if (@file_exists($zipfn)) {
       unlink($zipfn);
     }
@@ -421,11 +457,29 @@ class config_plugin_texit {
   * This function processes everything when the user asks for a PDF.
   */
   function process() {
-    $this->setup_files();
-    $this->_do_latexmk();
+    $needsupdate = $this->setup_files();
+	$pdftexitfn  = $this->get_pdf_texit_fn();
+	$pdfmediafn  = $this->get_pdf_media_fn();
+	$pdfmediaid  = $this->get_pdf_media_id();
+	print($pdfmediaid);
+	$zipfn       = $this->get_zip_fn();    
+	if ($needsupdate || !@file_exists($pdftexitfn)) {
+      $this->_do_latexmk();
+	}
     // then copy the pdf to media
-    $this->simple_copy($this->get_pdf_texit_fn(), $this->get_pdf_media_fn());
-    $this->compile_zip();
+	if ($needsupdate || !@file_exists($pdfmediafn)) {
+      $this->simple_copy($pdftexitfn, $pdfmediafn);
+	}
+	if ($this->conf['use_zip'] && ($needsupdate || !@file_exists($zipfn))) {
+        $this->compile_zip();
+	}
+	return $this->id_to_url($pdfmediaid);
+  }
+
+ /* This returns an absolute URL from a media ID.
+  */
+  function id_to_url($pdfmediaid) {
+	return ml($pdfmediaid, '', true, '&amp;', true);
   }
 }
 

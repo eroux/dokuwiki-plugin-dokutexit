@@ -56,7 +56,8 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
     }
     $this->loadConfig(); // we need to get the usual plugin config
     $pdfurl = $this->generate_pdf($event->data);
-    $this->redirect_to_pdf(rawurlencode($pdfurl));
+	print($pdfurl);
+    $this->redirect_to_pdf($pdfurl);
     $event->preventDefault();
     $event->stopPropagation();
     exit();  
@@ -84,7 +85,6 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
 	$nsbpc_obj = $this->loadHelper('nsbpc');
     $texit = new config_plugin_texit(getID(), $namespace_mode, $this->get_plugin_config(), $nsbpc_obj);
     $pdfurl = $texit->process();
-    $pdfurl = "http://www.luatex.org/svn/trunk/manual/luatexref-t.pdf";
     return $pdfurl;
   }
 

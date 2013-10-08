@@ -39,13 +39,14 @@ class texitrender_plugin_texit {
   var $_p_get_parsermodes = null;
   var $_Parser = null;
   var $doc_infos; 
+  var $texit;
   /**
    * Initializes the class
    *
    * @param $texit_obj : a texit object (defined in config.php)
    */
   //function texitrender_plugin_texit($pageid = NULL) {
-  function __constructor($texit_obj) {
+  function __construct($texit_obj) {
     $this->texit = $texit_obj;
     $this->_pageid = cleanID($pageid);
     $this->_doku_file = wikiFN($this->_pageid);
@@ -76,7 +77,6 @@ class texitrender_plugin_texit {
     $text = file_get_contents($basefn) or die("can't open file $basefn for reading");
     $parsed = $this->p_render_latex_text($text, $info);
     file_put_contents($destfn, $parsed) or die("can't open file $destfn for writing");
-    );
   }
 
   // ========================================================================
@@ -285,10 +285,11 @@ class texitrender_plugin_texit {
   function getLatexEntities() {
     static $latex_ent = NULL;
     if ( !$latex_ent ) {
-      $cfg = new texitConfig('entities');
-      if ($cfg->is_exist())
-    $latex_ent = $this->confToHash($cfg->get_filename());
-    }
+      $fn = $this->texit->get_entities_fn();
+	  if (@file_exists($fn)) {
+        $latex_ent = $this->confToHash($fn);
+      }
+	}
     return $latex_ent;
   }
 
