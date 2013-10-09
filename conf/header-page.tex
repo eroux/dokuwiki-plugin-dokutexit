@@ -38,3 +38,13 @@
 \usepackage{listings}       % provides syntaxic coloration for code
 \usepackage[normalem]{ulem} % provides underlining (\uline{})
 \usepackage{wrapfig}        % usefull for image 
+%% these are to be tuned by namespace, as they'll certainly vary
+\let\dokutitlelevelone\section
+\let\dokutitleleveltwo\subsection
+\let\dokutitleleveltree\subsubsection
+\let\dokutitlelevelfour\paragraph
+\let\dokutitlelevelfive\relax
+
+\input{commands.tex}
+
+\begin{document}

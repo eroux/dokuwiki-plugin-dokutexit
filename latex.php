@@ -368,23 +368,8 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
   function smiley($smiley) {
     if ( array_key_exists($smiley, $this->smileys) ) {
-      if (!(isset($this->smileys_ps[$smiley]) 
-        && @file_exists($this->smileys_ps[$smiley]))) {
-    $img = new TexItImage(DOKU_INC . 'lib/images/smileys/'. $this->smileys[$smiley]);
-    if ($img->is_error) {
-      $this->unformatted('img error'.DOKU_INC.'lib/images/smileys/'. $this->smileys[$smiley]);    
-      return ;
-    } 
-    $filename = $img->get_output_filename();
-    $this->smileys_ps[$smiley] = $filename;
-      }
-      if ($this->smileys_ps[$smiley] == '') 
-    {
-      $this->putent($smiley);
-      return;
-    }
-      $this->putcmd("includegraphics[height=1em]{"); // need config for that
-      $this->put($this->smileys_ps[$smiley]);
+      $this->putcmd("dokusmiley{");
+      $this->put(DOKU_INC.'lib/images/smileys/'.$this->smileys[$smiley]);
       $this->put("}");
     } else {
       $this->put($smiley);
@@ -1278,17 +1263,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
 
   function mediatops_old($filename, $title=NULL, $align=NULL, $width=NULL,
              $height=NULL, $cache=NULL, $linking=NULL) {
-    $img = new TexItImage($filename);
-    if ($img->is_error) {
-      $this->unformatted('img '. $filename . '('. $mime . '=>' . $ext . ')'); 
-      return '';
-    }
-    $ps_filename = $img->get_output_filename();
-    if ($ps_filename == '') {
-      $this->unformatted('img '. $filename);
-      return '';
-    } else {
-      if (!is_null($align) || !is_null($title)) {
+      if (!empty($align) || !empty($title)) {
     $this->putcmdnl("begin{figure*}[h]", -1);
     if ($align == "left") {
       $align = 'flushleft';
@@ -1300,10 +1275,6 @@ class Doku_Renderer_latex extends Doku_Renderer {
     }
     if ($align == "center")
       $this->putcmdnl("centering", -1);
-    else {
-      //      $this->putcmdnl("begin{" . $align . "}", -1);
-//       $this->putcmdnl("hfill", -1);
-    }
       }
       $this->putcmd("includegraphics", -1); // need config for that
       if ($width || $height) {
@@ -1317,9 +1288,9 @@ class Doku_Renderer_latex extends Doku_Renderer {
     $this->put("]", -1);
       }
       $this->put("{", -1);
-      $this->put($img->get_output_filename(), -1);
+      $this->put($filename, -1);
       $this->put("}\n", -1);
-      if (isset($title)) {
+      if (!empty($title)) {
     $this->putcmd("caption{", -1);
     if (substr($title, 0, 5) == 'http:') 
       $this->_formatLink(array('url' => $title, 
@@ -1329,7 +1300,7 @@ class Doku_Renderer_latex extends Doku_Renderer {
       $this->putent($title, -1);
     $this->putnl("}", -1);
       }
-      if (!is_null($align) || !is_null($title)) {
+      if (!empty($align) || !empty($title)) {
     // if ($align != 'center') {
 //       $this->putcmdnl("end{" . $align. "}", -1);
 //       $this->putcmdnl("hfill", -1);
@@ -1337,7 +1308,6 @@ class Doku_Renderer_latex extends Doku_Renderer {
     $this->putcmdnl("end{figure*}", -1);
       }
       return $this->put_flush();
-    }
   }
 
   function internalmedia ($src, $title=NULL, $align=NULL, $width=NULL,
