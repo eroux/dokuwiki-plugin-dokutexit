@@ -213,8 +213,9 @@ class config_plugin_texit {
   */
   function get_all_IDs() {
     global $conf;
-    $list = array();
     if ($this->namespace_mode) {
+      $list = array();
+      $nsdir = str_replace(':', '/', $this->ns);
       $opts = array('listdirs'  => false,
                     'listfiles' => true,
                     'pagesonly' => true,
@@ -225,7 +226,7 @@ class config_plugin_texit {
                     );
       // we cannot use $opts in search_list or in search_namespaces, see
       // https://bugs.dokuwiki.org/index.php?do=details&task_id=2858
-      search($list,$conf['datadir'],'search_universal',$opts,$this->id);
+      search($list,$conf['datadir'],'search_universal',$opts,$nsdir);
       return $list;
     } else {
       return array(array('id' => $this->id));
@@ -250,7 +251,7 @@ class config_plugin_texit {
      if (!is_array($value) || !$value['id']) { // I did'nt find any more elegant way to do so
        continue;
      }
-     $fn = wikiFN($this->id);
+     $fn = wikiFN($value['id']);
      $dest = $this->texitdir.'/'.noNS($value['id'])."-content.tex";
      $dest = $this->_escape_fn($dest);
      $result[$fn] = array('type' => 'tex', 'fn' => $dest);
@@ -282,7 +283,7 @@ class config_plugin_texit {
     // first we simply copy the file
     $this->simple_copy($base, $dest);
     // we prepare a string to append at the end:
-    $toappend = "\n\\input{commands.tex}\n\\begin{document}\n";
+    $toappend = "";
     foreach($this->all_files as $value) {
       switch($value['type']) {
         case 'tex':
