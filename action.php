@@ -56,14 +56,14 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
     }
     $this->loadConfig(); // we need to get the usual plugin config
     $pdfurl = $this->generate_pdf($event->data);
-	print($pdfurl);
     $this->redirect_to_pdf($pdfurl);
     $event->preventDefault();
     $event->stopPropagation();
     exit();  
   }
   
- /* A bit hackish, but I don't know any other way... (I cannot call getConf in another class)
+ /* A bit hackish, but I don't know any other way... (I cannot call getConf in 
+  * a non-Dukuwiki plugin class)
   */
   function get_plugin_config() {
     global $conf;
@@ -79,10 +79,10 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
     if ($action == "texitns") {
       $namespace_mode = true;
     }
-	// we want to have a nsbpc instance in config.php, but as it's not
-	// a Dokuwiki plugin, we can't... so we get it here and pass it
-	// to config.php
-	$nsbpc_obj = $this->loadHelper('nsbpc');
+    // we want to have a nsbpc instance in config.php, but as it's not
+    // a Dokuwiki plugin, we can't... so we get it here and pass it
+    // to config.php
+    $nsbpc_obj = $this->loadHelper('nsbpc');
     $texit = new config_plugin_texit(getID(), $namespace_mode, $this->get_plugin_config(), $nsbpc_obj);
     $pdfurl = $texit->process();
     return $pdfurl;
