@@ -39,6 +39,10 @@ You can use [nsbpc] to have per-namespace (and thus per-language) configuration.
  * *nsbpc_texit-page* overriding *conf/header-page.tex*
  * *nsbpc_texit-commands* overriding *conf/commands.tex*
 
+##### BibTeX config
+
+If it exists, TeXit will handle the file *texit.bib* in the *conf/* directory of the plugin. If you use [refnotes], TeXit will merge all BibTeX code from refnotes into a *texit.bib* in the namespace of the refnotes database pages (config option `reference-db-enable`).
+
 ### Output files
 
 When clicking on the export button, the plugin will compute an .pdf file containing the produced PDF. The output for page *namespace:subnamespace:id* will be named *namespace:subnamespace:id.pdf* and will automaticall be plae in *media:namespace:subnamespace*.
@@ -78,6 +82,7 @@ The structure of the *.zip* files in *media:namespace:subnamespace* is the follo
  * *commands.tex*
  * *page1-content.tex*
  * *page2-content.tex*
+ * *texit.bib* (if relevant)
 
 All filenames will have characters \_ escaped as \- for good TeX integration. This means that bad things may happen if you have *foo\-bar* and *foo\_bar* in the same namespace.
 
@@ -101,6 +106,12 @@ Disallow: /*texit*
 ### CMK integration
 
 Note that you can define custom markups with [cmk] (see the README file of cmk).
+
+### Refnotes integration
+
+You can use texit with refnotes, with the following limitations:
+  * only BibTeX configurations in database files will be taken into account
+  * ref namespaces won't work at all, you should put everythin in the root namespace
 
 ### Documentation
 
