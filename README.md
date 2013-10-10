@@ -100,7 +100,7 @@ Disallow: /*?do=texit*
 
 ### CMK integration
 
-Note that you can define custom markups with [cmk].
+Note that you can define custom markups with [cmk] (see the README file of cmk).
 
 ### Documentation
 
