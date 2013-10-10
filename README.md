@@ -93,7 +93,7 @@ To prevent robots from following the links to PDF export, add a `robots.txt` in 
 
 ```
 User-agent: *
-Disallow: /*?do=texit*
+Disallow: /*texit*
 ```
 
 (untested yet).

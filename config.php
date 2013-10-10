@@ -269,7 +269,6 @@ class config_plugin_texit {
    $result[$base] = array('type' => 'commands', 'fn' => $this->get_dest_commands_fn());
    $this->all_files = $result;
   }
-
  /* This function takes three arguments:
   *    * base is the full path of the base header file
   *           (for instance /path/to/dkwiki/lib/plugin/texit/conf/header-page.tex)
@@ -284,14 +283,22 @@ class config_plugin_texit {
     $this->simple_copy($base, $dest);
     // we prepare a string to append at the end:
     $toappend = "";
+	// we spot the last value:
+	$beginning = 1;
     foreach($this->all_files as $value) {
       switch($value['type']) {
         case 'tex':
+		  // between two different files, we call the \dokuinternspagedo
+		  // macro, doing nothing by default.
+		  if (!$beginning) {
+            $toappend .= "\\dokuinternspagedo\n";
+		  }
           $toappend .= '\dokuinclude{'.basename($value['fn'], '.tex')."}\n";
           break;
         default:
           break;
       }
+	  $beginning = 0;
     }
     $toappend .= "\n\\end{document}";
     // the we open it in append mode to write things at the end:
