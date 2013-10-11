@@ -111,7 +111,7 @@ Note that you can define custom markups with [cmk] (see the README file of cmk).
 
 You can use texit with refnotes, with the following limitations:
   * only BibTeX configurations in database files will be taken into account
-  * ref namespaces won't work at all, you should put everythin in the root namespace
+  * ref namespaces won't work at all, you should put everything in the root namespace
 
 ### Documentation
 
@@ -175,6 +175,10 @@ You need to be able to use zip functions in php (on Debian, install `libphp-pclz
 
 It has only been tested on a recent dokuwiki (Release 2013-05-10a "Weatherwax").
 
+### Limitations and TODO
+
+  * Cache is not well handled yet: if you change the configuration of a page without changing page content, you'll need to clean the cache, otherwise output will still be the old version (see following point).
+  * When ready, use [nsbpc] function for cache (see TODO section of nsbpc's README and  [Dokuwiki documentation][cache]).
 
 [Dokuwiki TeXit plugin]: https://www.dokuwiki.org/plugin:dokutexit
 [nsbpc]: https://github.com/eroux/dokuwiki-plugin-nsbpc
@@ -185,3 +189,4 @@ It has only been tested on a recent dokuwiki (Release 2013-05-10a "Weatherwax").
 [pdfexport]: https://www.dokuwiki.org/tips:pdfexport#dokuwiki-templateexport_link_in_pagetools
 [refnotes]: https://www.dokuwiki.org/plugin:refnotes
 [cmk]: https://github.com/eroux/dokuwiki-plugin-cmk
+[cache]:https://www.dokuwiki.org/devel:caching#plugins
