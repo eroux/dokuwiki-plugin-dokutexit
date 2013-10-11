@@ -36,6 +36,7 @@ class config_plugin_texit {
   var $prfix;
   var $all_files;
   var $texit_render_obj; // not initialized by constructor, done only if needed
+  var $bibfn;
  /*
   * I didn't use a helper plugin because I needed a constructor.
   * This basically sets up the environment by computing base the filenames, etc.
@@ -46,13 +47,12 @@ class config_plugin_texit {
     $this->ns = getNS(cleanID($id));
     $this->namespace_mode = $namespace_mode;
     $this->nsbpc = $nsbpc_obj;
-    //$this->nsbpc = plugin_load('helper', 'nsbpc');
     $this->conf = $conf;
     $this->set_prefix();
     $this->_set_texit_dir();
     $this->_set_media_dir();
+    $this->bibfn = $this->generate_bib();
     $this->get_all_files();
-    $this->generate_bib();
   }
  /*
   * This function (eventually) generates the file texit.bib, in the directory
@@ -198,6 +198,16 @@ class config_plugin_texit {
   
   function get_zip_fn() {
     return $this->mediadir.'/'.$this->get_common_basename().".zip";
+  }
+  
+  function get_base_bib_fn() {
+    return $this->bibfn;
+  }
+  
+  function get_dest_bib_fn() {
+    // we always call it texit.bib for practical reasons, this may
+    // change in the future
+    return $this->texitdir.'/'.'texit.bib';
   }
   
   function get_pdf_media_fn() {
@@ -348,6 +358,10 @@ class config_plugin_texit {
      nice_die("TeXit: Unable to find a commands file!");
    }
    $result[$base] = array('type' => 'commands', 'fn' => $this->get_dest_commands_fn());
+   $bib = $this->get_base_bib_fn();
+   if ($bib) { // not mandatory
+     $result[$bib] = array('type' => 'bib', 'fn' => $this->get_dest_bib_fn());
+   }
    $this->all_files = $result;
   }
  /* This function takes three arguments:
@@ -451,6 +465,9 @@ class config_plugin_texit {
           case "commands":
             $this->simple_copy($base, $destfn);
             break;
+          case "bib":
+            $this->simple_copy($base, $destfn);
+            break;
           case "tex":
             $this->compile_tex($base, $destfn);
             break;
@@ -476,7 +493,7 @@ class config_plugin_texit {
     } else {
       $basecmdline = '';
     }
-    $cmdline = $basecmdline."latexmk -f ";
+    $cmdline = $basecmdline."latexmk -f -bibtex ";
     switch ($this->conf['latex_mode'])
     {
       case "latex":

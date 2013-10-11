@@ -64,6 +64,7 @@ The intermediate .tex files will be placed in the *texit:namespace:subnamespace*
 The *texit:namespace:subnamespace* namespace will contain:
 
  * *commands.tex* : a copy of the corresponding file
+ * *texit.bib* : the bibliography database (if present)
  * *page1-content.tex* : the translation content of the *page1* page in TeX (no header, not a complete tex file)
  * *page2-content.tex* : idem for page2
  * *page1.tex* : an adptation of *header-page.tex* for *page1.pdf*, `\include`ing the following tex files:
