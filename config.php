@@ -38,6 +38,7 @@ class config_plugin_texit {
   var $texit_render_obj; // not initialized by constructor, done only if needed
  /*
   * I didn't use a helper plugin because I needed a constructor.
+  * This basically sets up the environment by computing base the filenames, etc.
   *
   */
   function __construct($id, $namespace_mode, $conf, $nsbpc_obj) {
@@ -51,6 +52,84 @@ class config_plugin_texit {
     $this->_set_texit_dir();
     $this->_set_media_dir();
     $this->get_all_files();
+    $this->generate_bib();
+  }
+ /*
+  * This function (eventually) generates the file texit.bib, in the directory
+  * of the namespace pointed by the "reference-db-enable" configuration option
+  * of the refnotes plugin.
+  *
+  * To do so, it merges:
+  *   - the BibTeX parts of all pages in the refnotes's database namespace
+  *       ("refnotes" by default)
+  *   - the conf/bibliography.bib in the texit plugin directory
+  */
+  function generate_bib() {
+    global $conf;
+    $bibtext = ''; // we merge all the files in this string
+    $basefn = PLUGIN_TEXIT_CONF.'bibliography.bib';
+    if (is_readable($basefn)) {
+      $bibtext = file_get_contents($basefn);
+    }
+    if (!is_callable("refnotes_configuration::getSetting")) {
+      return;
+    }
+    // code coming from refnotes' syntax.php
+    $refnotes_nsdir = refnotes_configuration::getSetting('reference-db-namespace');
+    $refnotes_nsdir = str_replace(':', '/', $refnotes_nsdir);
+    $refnotes_nsdir = trim($refnotes_nsdir, '/ ');
+    if (empty($refnotes_nsdir)) {
+      return;
+    }
+    $all_refnotes_pages = Array();
+    $opts = array('listdirs'  => false,
+      'listfiles' => true,
+      'pagesonly' => true,
+      'skipacl'   => false, // to check for read right
+      'sneakyacl' => true,
+      'showhidden'=> false,
+      );
+    // we cannot use $opts in search_list or in search_namespaces, see
+    // https://bugs.dokuwiki.org/index.php?do=details&task_id=2858
+    search($all_refnotes_pages,$conf['datadir'],'search_universal',$opts,$refnotes_nsdir);
+    // now all_refnotes_pages contains all the configuration pages of refnotes, that
+    // we'll have to merge...
+    // First step here is to see if we need to recompile anything:
+    $destfn = $conf['datadir'].'/'.$refnotes_nsdir.'/texit.bib';
+    if (is_readable($destfn)) {
+      // if the file is readable, then it might be up-to-date?
+      $needsupdate = $this->_needs_update($basefn, $destfn);
+      foreach ($all_refnotes_pages as $page) {
+        // A problem here: if the refnote page doesn't contain
+        // any bibtex code, the update will take place anyway,
+        // but it doesn't sound critical.
+        if ($this->_needs_update(wikiFN($page['id']), $destfn)) {
+          $needsupdate = true;
+        }
+      }
+      // if the file doesn't need update, we just return.
+      if (!$needsupdate) {
+        return;
+      }
+    }
+    foreach($all_refnotes_pages as $page) {
+      $fn = wikiFN($page['id']);
+      $bibtext .= $this->parse_refnotes_page($fn);
+    }
+    if (empty($bibtext)) {
+      return;
+    }
+    file_put_contents($destfn, $bibtext);
+  }
+
+  function parse_refnotes_page ($fn) {
+    $filestr = file_get_contents($fn);
+    preg_match_all('#(?<=<code bibtex>)(((?!</code>).)*)(?=</code>)#ms', $filestr, $matches);
+    $return = '';
+    foreach($matches[0] as $match) {
+      $return .= $match."\n";
+    }
+    return $return;
   }
 
   function set_prefix() {
@@ -224,8 +303,6 @@ class config_plugin_texit {
                     'sneakyacl' => true,
                     'showhidden'=> false,
                     );
-      // we cannot use $opts in search_list or in search_namespaces, see
-      // https://bugs.dokuwiki.org/index.php?do=details&task_id=2858
       search($list,$conf['datadir'],'search_universal',$opts,$nsdir);
       return $list;
     } else {
@@ -239,7 +316,7 @@ class config_plugin_texit {
   *    [base] => (type, fn)
   * where:
   *  * base is the base filename (like /path/to/dkwiki/pages/ns/id.txt)
-  *  * type is either "header", "commands" or "tex"
+  *  * type is either "header", "commands", "tex" or "bib".
   *  * fn is the absolute destination filename (prefix included)
   */
   function get_all_files() {
@@ -283,22 +360,22 @@ class config_plugin_texit {
     $this->simple_copy($base, $dest);
     // we prepare a string to append at the end:
     $toappend = "";
-	// we spot the last value:
-	$beginning = 1;
+    // we spot the last value:
+    $beginning = 1;
     foreach($this->all_files as $value) {
       switch($value['type']) {
         case 'tex':
-		  // between two different files, we call the \dokuinternspagedo
-		  // macro, doing nothing by default.
-		  if (!$beginning) {
+          // between two different files, we call the \dokuinternspagedo
+          // macro, doing nothing by default.
+          if (!$beginning) {
             $toappend .= "\\dokuinternspagedo\n";
-		  }
+          }
           $toappend .= '\dokuinclude{'.basename($value['fn'], '.tex')."}\n";
           break;
         default:
           break;
       }
-	  $beginning = 0;
+      $beginning = 0;
     }
     $toappend .= "\n\\end{document}";
     // the we open it in append mode to write things at the end:
