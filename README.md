@@ -31,17 +31,23 @@ Configuration is organized this way:
  * *conf/header-namespace.tex* is the header which will be included when a whole namespace will be exported
  * *conf/header-page.tex* is the same for one page export
  * *conf/commands.tex* is where the TeX macros for dokuwiki styles will be held (this is common for namespace and page)
- 
+ * *conf/footer.tex*, if present, will be inserted before `\end{document}`, useful to insert table of contents or bibliographies.
+
 ##### NSBPC plugin config
 
 You can use [nsbpc] to have per-namespace (and thus per-language) configuration. The configuration pages will be:
  * *nsbpc_texit-namespace* overriding *conf/header-namespace.tex*
  * *nsbpc_texit-page* overriding *conf/header-page.tex*
  * *nsbpc_texit-commands* overriding *conf/commands.tex*
+ * *nsbpc_texit-footer* overriding *conf/footer.tex*
 
 ##### BibTeX config
 
-If it exists, TeXit will handle the file *texit.bib* in the *conf/* directory of the plugin. If you use [refnotes], TeXit will merge all BibTeX code from refnotes into a *texit.bib* in the namespace of the refnotes database pages (config option `reference-db-enable`).
+If it exists, TeXit will handle the file *texit.bib* in the *conf/* directory of the plugin.
+
+If you use [refnotes], TeXit will merge all BibTeX code from refnotes into a *texit.bib* in the namespace of the refnotes database pages (config option `reference-db-enable`).
+
+If you want to insert the bibliography, please use the `\dokubibliography` (defined in *commands.tex*) macro in your header or footer, it will call the good filename -- just it case this one (*texit.bib*) changes.
 
 ### Output files
 
@@ -64,7 +70,8 @@ The intermediate .tex files will be placed in the *texit:namespace:subnamespace*
 The *texit:namespace:subnamespace* namespace will contain:
 
  * *commands.tex* : a copy of the corresponding file
- * *texit.bib* : the bibliography database (if present)
+ * *texit.bib* : the bibliography database (not mandatory)
+ * *footer.tex* : the footer (not mandatory)
  * *page1-content.tex* : the translation content of the *page1* page in TeX (no header, not a complete tex file)
  * *page2-content.tex* : idem for page2
  * *page1.tex* : an adptation of *header-page.tex* for *page1.pdf*, `\include`ing the following tex files:
@@ -84,6 +91,7 @@ The structure of the *.zip* files in *media:namespace:subnamespace* is the follo
  * *page1-content.tex*
  * *page2-content.tex*
  * *texit.bib* (if relevant)
+ * *footer.tex* (if exists)
 
 All filenames will have characters \_ escaped as \- for good TeX integration. This means that bad things may happen if you have *foo\-bar* and *foo\_bar* in the same namespace.
 

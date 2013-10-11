@@ -278,6 +278,28 @@ class config_plugin_texit {
       return $this->texitdir.'/'.$this->get_common_basename().".tex";
     }
   }
+  /* This returns the full path of the base footer file we take as reference
+   * for this compilation, or false if there is no such file.
+   */
+  function get_base_footer_fn() {
+    // first we look through nsbpc
+    $found = $this->nsbpc->getConfFN("texit-footer", $this->ns);
+    if ($found) {
+      return $found;
+    }
+    // No nsbpc configuration was found, now looking in the conf/ directory of
+    // the plugin.
+    if (is_readable(PLUGIN_TEXIT_CONF."footer.tex")) {
+      return PLUGIN_TEXIT_CONF."footer.tex";
+    }
+    return false;
+  }
+  /* This returns the full path of the commands file we want in the destination
+   * texit namespace.
+   */
+  function get_dest_footer_fn() {
+    return $this->texitdir."/footer.tex";
+  }
   /* This returns the full path of the base coommands file we take as reference
    * for this compilation.
    */
@@ -362,6 +384,10 @@ class config_plugin_texit {
    if ($bib) { // not mandatory
      $result[$bib] = array('type' => 'bib', 'fn' => $this->get_dest_bib_fn());
    }
+   $footer = $this->get_base_footer_fn();
+   if ($footer) { // not mandatory
+     $result[$footer] = array('type' => 'footer', 'fn' => $this->get_dest_footer_fn());
+   }
    $this->all_files = $result;
   }
  /* This function takes three arguments:
@@ -377,23 +403,29 @@ class config_plugin_texit {
     // first we simply copy the file
     $this->simple_copy($base, $dest);
     // we prepare a string to append at the end:
-    $toappend = "";
+    $toappend = "\n";
     // we spot the last value:
     $beginning = 1;
+    $footer = false;
     foreach($this->all_files as $value) {
       switch($value['type']) {
         case 'tex':
           // between two different files, we call the \dokuinternspagedo
           // macro, doing nothing by default.
           if (!$beginning) {
-            $toappend .= "\\dokuinternspagedo\n";
+            $toappend .= "\\dokuinternspagedo\n\n";
           }
-          $toappend .= '\dokuinclude{'.basename($value['fn'], '.tex')."}\n";
+          $toappend .= '\dokuinclude{'.basename($value['fn'], '.tex')."}\n\n";
           break;
+        case 'footer':
+          $footer = basename($value['fn'], '.tex');
         default:
           break;
       }
       $beginning = 0;
+    }
+    if ($footer) {
+      $toappend .= "\dokuinclude{".$footer."}\n";
     }
     $toappend .= "\n\\end{document}";
     // the we open it in append mode to write things at the end:
@@ -468,6 +500,9 @@ class config_plugin_texit {
           case "bib":
             $this->simple_copy($base, $destfn);
             break;
+          case "footer":
+            $this->simple_copy($base, $destfn);
+            break;
           case "tex":
             $this->compile_tex($base, $destfn);
             break;
@@ -493,7 +528,10 @@ class config_plugin_texit {
     } else {
       $basecmdline = '';
     }
-    $cmdline = $basecmdline."latexmk -f -bibtex ";
+    $cmdline = $basecmdline."latexmk -f ";
+    if ($this->bibfn) {
+      $cmdline .= "-bibtex ";
+    }
     switch ($this->conf['latex_mode'])
     {
       case "latex":
