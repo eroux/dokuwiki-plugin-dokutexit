@@ -68,19 +68,16 @@ class config_plugin_texit {
     global $conf;
     $bibtext = ''; // we merge all the files in this string
     $basefn = PLUGIN_TEXIT_CONF.'bibliography.bib';
-    if (is_readable($basefn)) {
-      $bibtext = file_get_contents($basefn);
-    }
     if (!is_callable("refnotes_configuration::getSetting")) {
-      return;
+      // case where refnotes isn't available. In this case the
+      // file to include is just $basefn.
+      return $basefn;  
     }
     // code coming from refnotes' syntax.php
     $refnotes_nsdir = refnotes_configuration::getSetting('reference-db-namespace');
     $refnotes_nsdir = str_replace(':', '/', $refnotes_nsdir);
     $refnotes_nsdir = trim($refnotes_nsdir, '/ ');
-    if (empty($refnotes_nsdir)) {
-      return;
-    }
+    $destfn = $conf['datadir'].'/'.$refnotes_nsdir.'/texit.bib';
     $all_refnotes_pages = Array();
     $opts = array('listdirs'  => false,
       'listfiles' => true,
@@ -95,10 +92,12 @@ class config_plugin_texit {
     // now all_refnotes_pages contains all the configuration pages of refnotes, that
     // we'll have to merge...
     // First step here is to see if we need to recompile anything:
-    $destfn = $conf['datadir'].'/'.$refnotes_nsdir.'/texit.bib';
     if (is_readable($destfn)) {
       // if the file is readable, then it might be up-to-date?
-      $needsupdate = $this->_needs_update($basefn, $destfn);
+      $needsupdate = false;
+      if (is_readable($basefn)) {
+        $needsupdate = $this->_needs_update($basefn, $destfn);
+      }
       foreach ($all_refnotes_pages as $page) {
         // A problem here: if the refnote page doesn't contain
         // any bibtex code, the update will take place anyway,
@@ -109,17 +108,22 @@ class config_plugin_texit {
       }
       // if the file doesn't need update, we just return.
       if (!$needsupdate) {
-        return;
+        return $destfn;
       }
+    }
+    if (is_readable($basefn)) {
+      $bibtext = file_get_contents($basefn);
     }
     foreach($all_refnotes_pages as $page) {
       $fn = wikiFN($page['id']);
       $bibtext .= $this->parse_refnotes_page($fn);
     }
     if (empty($bibtext)) {
-      return;
+      return false;
     }
     file_put_contents($destfn, $bibtext);
+    // we return the filename where the bibliography is saved
+    return $destfn;
   }
 
   function parse_refnotes_page ($fn) {
