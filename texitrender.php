@@ -166,24 +166,25 @@ class texitrender_plugin_texit {
     if (is_null($this->_Parser)) {
       $this->_Parser = & new Doku_Parser();
     } 
-    if (is_null($this->_Parser->Handler)) {
-      $this->_Parser->Handler = & new Doku_Handler();
-    }
+	// TODO: this leaves room for optimization, as the same
+	// handler could be used several times instead of being
+	// reinstanciated (as is the case now). The problem is
+	// that there is no reset() function on handlers and all
+	// attempts to do it by hand failes... patch welcome!
+    $this->_Parser->Handler = new Doku_Handler();
     if (count($this->_Parser->modes) == 0) {
       foreach($this->_p_get_parsermodes as $mode){
         $this->_Parser->addMode($mode['mode'],$mode['obj']);
       }
     }
-    // Do the parsing
-    //trigger_event('PARSER_WIKITEXT_PREPROCESS', $text);
     $p = $this->_Parser->parse($text);
-    $this->_Parser->Handler->calls = array();
     return $p;
   }
 
   function p_render_latex_text(& $text, & $info){
 //     error_log("p_get_instructions[start]:" . $this->_p_get_count);
     $ins = $this->p_get_instructions($text);
+
     unset($text);
     $parsed = $this->p_render('latex', $ins, $info);
 //     error_log("p_get_instructions[end]:" . $this->_p_get_count++);
