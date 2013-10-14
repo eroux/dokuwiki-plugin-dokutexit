@@ -189,7 +189,7 @@ class config_plugin_texit {
     global $conf;
     $path = $this->conf['texitdir'];
     // taken from init_paths in inc/init.php
-    $path = empty($path) ? $conf['savedir'].'/texit' : $path;
+    $path = empty($path) ? $conf['datadir'].'/texit' : $path;
     $path .= '/'.str_replace(':','/',$this->ns);
     $path = realpath($path);
     $this->_create_dir($path);
