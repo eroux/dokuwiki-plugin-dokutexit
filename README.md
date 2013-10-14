@@ -188,6 +188,7 @@ It has only been tested on a recent dokuwiki (Release 2013-05-10a "Weatherwax").
 
   * Cache is not well handled yet: if you change the configuration of a page without changing page content, you'll need to clean the cache, otherwise output will still be the old version (see following point).
   * When ready, use [nsbpc] function for cache (see TODO section of nsbpc's README and  [Dokuwiki documentation][cache]).
+  * When used with CMK, if a .tex file is already compiled and cmk configuration changes, TeXit has currently no way to know it has te recompile. I believe CMK should put some infos about file dependencies in the medata of the page (it's possible, see link in previous point)
 
 [Dokuwiki TeXit plugin]: https://www.dokuwiki.org/plugin:dokutexit
 [nsbpc]: https://github.com/eroux/dokuwiki-plugin-nsbpc
