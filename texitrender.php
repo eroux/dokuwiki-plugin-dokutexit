@@ -166,11 +166,11 @@ class texitrender_plugin_texit {
     if (is_null($this->_Parser)) {
       $this->_Parser = & new Doku_Parser();
     } 
-	// TODO: this leaves room for optimization, as the same
-	// handler could be used several times instead of being
-	// reinstanciated (as is the case now). The problem is
-	// that there is no reset() function on handlers and all
-	// attempts to do it by hand failes... patch welcome!
+    // TODO: this leaves room for optimization, as the same
+    // handler could be used several times instead of being
+    // reinstanciated (as is the case now). The problem is
+    // that there is no reset() function on handlers and all
+    // attempts to do it by hand failes... patch welcome!
     $this->_Parser->Handler = new Doku_Handler();
     if (count($this->_Parser->modes) == 0) {
       foreach($this->_p_get_parsermodes as $mode){
@@ -266,7 +266,7 @@ class texitrender_plugin_texit {
     $Renderer = & new $rclass(); #FIXME any way to check for class existance?
     $Renderer->smileys = getSmileys();
     $Renderer->entities = getEntities();
-    $Renderer->latexentities = $this->getLatexEntities();
+    $Renderer->latexentities = $this->_texit_conf['latexentities'];
     $Renderer->acronyms = getAcronyms();
     $Renderer->interwiki = getInterwiki();
     $Renderer->info = $info;
@@ -282,18 +282,6 @@ class texitrender_plugin_texit {
     // Return the output
     return $Renderer->doc;
   }
-  
-  function getLatexEntities() {
-    static $latex_ent = NULL;
-    if ( !$latex_ent ) {
-      $fn = $this->texit->get_entities_fn();
-	  if (@file_exists($fn)) {
-        $latex_ent = $this->confToHash($fn);
-      }
-	}
-    return $latex_ent;
-  }
-
 
 /**
  * Builds a hash from a configfile

@@ -53,7 +53,44 @@ class config_plugin_texit {
     $this->_set_media_dir();
     $this->bibfn = $this->generate_bib();
     $this->get_all_files();
+    $this->conf['latexentities'] = false; // we generate it at compile time
+    $this->texit_render_obj = false;
   }
+ /*
+  * This function sets $this->latexentities to an array where keys are
+  * the initial characters and values are the characters escaped in 
+  * LaTeX (ex: _ => \_). It gets in by calling conftohash on conf/entities.cfg
+  * in the plugin's directory.
+  */
+  function get_entities() {
+    $basefn = PLUGIN_TEXIT_CONF.'entities.cfg';
+    return $this->confToHash($basefn);
+  }
+
+  /**
+  * Builds a hash from a configfile
+  *
+  * If $lower is set to true all hash keys are converted to
+  * lower case.
+  *
+  * This is a modified version of Dokuwiki's function
+  * that doesn't consider # as a comment character (we
+  * need it for LaTeX entities).
+  */
+  function confToHash($file) {
+    $conf = array();
+    $lines = @file( $file );
+    if ( !$lines ) return false;
+    foreach ( $lines as $line ) {
+      $line = trim($line);
+      if(empty($line)) continue;
+      $line = preg_split('/[\s\t]+/',$line,2);
+      // Build the associative array
+      $conf[$line[0]] = $line[1];
+    }
+    return $conf;
+  }
+
  /*
   * This function (eventually) generates the file texit.bib, in the directory
   * of the namespace pointed by the "reference-db-enable" configuration option
@@ -235,13 +272,6 @@ class config_plugin_texit {
     }
   }
 
-  /* This returns the full path of the entities.cfg config file. Not searched
-   * through nsbpc.
-   */
-  function get_entities_fn() {
-      return PLUGIN_TEXIT_CONF.'entities.cfg';
-  }
-
   /* This returns the full path of the base header file we take as reference
    * for this compilation. In case nothing is found, false is returned.
    */
@@ -367,9 +397,6 @@ class config_plugin_texit {
      $fn = wikiFN($value['id']);
      $dest = $this->texitdir.'/'.noNS($value['id'])."-content.tex";
      $dest = $this->_escape_fn($dest);
-//	 if (!is_writable($dest)) {
-//       nice_die("TeXit: cannot write in file $dest, please fix your permissions");
-//	 }
      $result[$fn] = array('type' => 'tex', 'fn' => $dest);
    }
    // and we add the header and command
@@ -393,6 +420,7 @@ class config_plugin_texit {
    }
    $this->all_files = $result;
   }
+
  /* This function takes three arguments:
   *    * base is the full path of the base header file
   *           (for instance /path/to/dkwiki/lib/plugin/texit/conf/header-page.tex)
@@ -443,6 +471,10 @@ class config_plugin_texit {
   * It reads $base, renders it into TeX and writes $dest.
   */
   function compile_tex($base, $dest) {
+    if (!$this->conf['latexentities'])
+      {
+        $this->conf['latexentities'] = $this->get_entities();
+      }
     if (!$this->texit_render_obj)
       {
         $this->texit_render_obj = new texitrender_plugin_texit($this);
