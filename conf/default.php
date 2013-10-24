@@ -26,5 +26,6 @@ $conf['use_prefix'] = false;
 $conf['pre_prefix'] = '';
 $conf['prefix_separator'] = ','; // Must be ASCII!! (used in strtr)
 $conf['texitdir'] = '';
+$conf['includestart'] = false;
 $conf['recurse'] = 'off';
 $conf['recurse_file'] = false;

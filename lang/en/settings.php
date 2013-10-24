@@ -26,5 +26,6 @@ $lang['use_prefix'] = 'Set to true if you want to prepend the namespace in your 
 $lang['pre_prefix'] = 'A string to prepend to the prefix (eg. your website url)';
 $lang['prefix_separator'] = 'Character used to replace ":" as namespace separator in the prefix';
 $lang['texitdir'] = 'Directory where TeXit plugin will store TeX files (leave empty to use $conf[\'datadir\']."texit")';
+$lang['includestart'] = 'Include "start" page when generating namespace PDF?';
 $lang['recurse'] = 'TODO';
 $lang['recurse_file'] = 'TODO';

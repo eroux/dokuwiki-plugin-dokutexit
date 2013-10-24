@@ -26,5 +26,6 @@ $meta['use_prefix'] = array('onoff');
 $meta['pre_prefix'] = array('string');
 $meta['prefix_separator'] = array('string');
 $meta['texitdir'] = array('string');
+$meta['includestart'] = array('onoff');
 $meta['recurse'] = array('multichoice','_choices' => array('off', 'on', 'chapter', 'appendix'));
 $meta['recurse_file'] = array('onoff');

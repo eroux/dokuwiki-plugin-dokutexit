@@ -369,6 +369,9 @@ class config_plugin_texit {
                     'sneakyacl' => true,
                     'showhidden'=> false,
                     );
+	  if ($this->conf['includestart'] == false) {
+	    $opts['idmatch'] = "^((?!start$).)+$";
+      }
       search($list,$conf['datadir'],'search_universal',$opts,$nsdir);
       return $list;
     } else {
