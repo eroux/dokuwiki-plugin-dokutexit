@@ -191,8 +191,8 @@ class config_plugin_texit {
     // taken from init_paths in inc/init.php
     $path = empty($path) ? $conf['datadir'].'/../texit' : $path;
     $path .= '/'.str_replace(':','/',$this->ns);
-    $path = realpath($path);
     $this->_create_dir($path);
+    $path = realpath($path);
     $this->texitdir = $path;
   }
   
@@ -367,6 +367,9 @@ class config_plugin_texit {
      $fn = wikiFN($value['id']);
      $dest = $this->texitdir.'/'.noNS($value['id'])."-content.tex";
      $dest = $this->_escape_fn($dest);
+//	 if (!is_writable($dest)) {
+//       nice_die("TeXit: cannot write in file $dest, please fix your permissions");
+//	 }
      $result[$fn] = array('type' => 'tex', 'fn' => $dest);
    }
    // and we add the header and command
@@ -465,7 +468,7 @@ class config_plugin_texit {
   * update and thus return true.
   */
   function _needs_update($base, $dest) {
-    if (!@file_exists($dest) || !@file_exists($dest)) {
+    if (!file_exists($dest) || !file_exists($dest)) {
         return true;
       }
     return filemtime($base) > filemtime($dest);
