@@ -70,7 +70,7 @@ class syntax_plugin_texit extends DokuWiki_Syntax_Plugin {
   /**
    * Handle the match
    */
-  function handle($match, $state, $pos, &$handler){
+  function handle($match, $state, $pos, Doku_Handler $handler){
     //print_r(array('match' => $match, 'state' => $state, "pos" => $pos, "handler" => $handler));
     //print "<br>";
     if ($state == DOKU_LEXER_UNMATCHED) {
@@ -89,7 +89,7 @@ class syntax_plugin_texit extends DokuWiki_Syntax_Plugin {
   /**
    * Create output
    */
-  function render($mode, &$renderer, $data) {
+  function render($mode, Doku_Renderer $renderer, $data) {
     global $ID;
     list($state, $substate, $match, $pos) = $data;
     if (!isset($this->_texit)) {

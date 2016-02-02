@@ -32,7 +32,7 @@ class action_plugin_texit extends DokuWiki_Action_Plugin {
    * @param Doku_Event_Handler $controller DokuWiki's event controller object
    * @return void
    */
-  public function register(Doku_Event_Handler &$controller) {
+  public function register(Doku_Event_Handler $controller) {
      $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this,
                                 'handle_action_act_preprocess');
   }
